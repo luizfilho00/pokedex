@@ -2,6 +2,7 @@ import { IconButton } from "@/components/ui/icon-button";
 import { PokemonCard } from "@/components/ui/pokemon-card";
 import { SearchBar } from "@/components/ui/search-bar";
 import { TextColors } from "@/constants/theme";
+import { FireType, GrassType, PoisonType, WaterType } from "@/model/pokemon_type";
 import { ImageBackground, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -23,9 +24,30 @@ export default function HomeScreen() {
             placeholder="What Pokémon are you looking for?"
             style={styles.searchBar}
           />
-          <PokemonCard />
-          <PokemonCard />
-          <PokemonCard />
+          <PokemonCard
+            pokemon={{
+              name: "Bulbasaur",
+              number: "#001",
+              types: [new GrassType, new PoisonType],
+              image: require("@/assets/images/bulbasaur.png"),
+            }}
+          />
+          <PokemonCard
+            pokemon={{
+              name: "Charmander",
+              number: "#002",
+              types: [new FireType(), new PoisonType()],
+              image: require("@/assets/images/bulbasaur.png"),
+            }}
+          />
+          <PokemonCard
+            pokemon={{
+              name: "Squirtle",
+              number: "#003",
+              types: [new WaterType, new PoisonType],
+              image: require("@/assets/images/bulbasaur.png"),
+            }}
+          />
         </ImageBackground>
       </View>
     </SafeAreaView>
