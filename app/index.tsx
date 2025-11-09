@@ -60,11 +60,17 @@ const pokemonList = [
 export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
-      <ImageBackground
-        source={require("@/assets/images/gradient_pokeball.png")}
-        style={{paddingTop: 32}}
-      >
-        <View style={styles.header}>
+      <View style={styles.header}>
+        <ImageBackground
+          source={require("@/assets/images/gradient_pokeball.png")}
+          imageStyle={{
+            height: "80%",
+            width: "100%",
+            resizeMode: "contain",
+            position: "absolute",
+            top: -30,
+          }}
+        >
           <TopBarActions />
           <Text style={styles.headerText}>Pokédex</Text>
           <Text style={styles.description}>
@@ -75,15 +81,16 @@ export default function HomeScreen() {
             placeholder="What Pokémon are you looking for?"
             style={styles.searchBar}
           />
-        </View>
-      </ImageBackground>
-      <FlatList
-        style={styles.list}
-        data={pokemonList}
-        renderItem={({ item }) => <PokemonCard pokemon={item} />}
-        keyExtractor={(item) => item.number}
-        showsVerticalScrollIndicator={false}
-      />
+        </ImageBackground>
+
+        <FlatList
+          style={styles.list}
+          data={pokemonList}
+          renderItem={({ item }) => <PokemonCard pokemon={item} />}
+          keyExtractor={(item) => item.number}
+          showsVerticalScrollIndicator={false}
+        />
+      </View>
     </SafeAreaView>
   );
 }
@@ -108,6 +115,20 @@ function TopBarActions() {
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+  },
+  header: {
+    flex: 1,
+  },
+  headerText: {
+    fontSize: 32,
+    fontWeight: "bold",
+    paddingHorizontal: 32,
+    paddingTop: 35,
+    color: TextColors.black,
+  },
   description: {
     fontSize: 16,
     fontWeight: "400",
@@ -118,30 +139,17 @@ const styles = StyleSheet.create({
   iconButtons: {
     flexDirection: "row",
     alignSelf: "flex-end",
-    padding: 16,
-    gap: 20,
+    paddingHorizontal: 32,
+    paddingTop: 48,
+    gap: 8,
   },
   searchBar: {
     marginTop: 24,
     marginBottom: 20,
     marginHorizontal: 32,
   },
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-  },
-  header: {
-    flexDirection: "column",
-  },
-  headerText: {
-    fontSize: 32,
-    fontWeight: "bold",
-    paddingHorizontal: 32,
-    paddingTop: 35,
-    color: TextColors.black,
-  },
   list: {
-    flex: 3,
+    flex: 1,
     marginBottom: 16,
   },
 });
