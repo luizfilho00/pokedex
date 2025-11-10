@@ -1,60 +1,15 @@
 import { IconButton } from "@/components/ui/icon-button";
-import { PokemonCard } from "@/components/ui/pokemon-card";
 import { SearchBar } from "@/components/ui/search-bar";
 import { TextColors } from "@/constants/theme";
+import { PokemonList } from "@/features/pokemons/ui/pokemon-list";
 import {
-  FireType,
-  GrassType,
-  PoisonType,
-  WaterType,
-} from "@/model/pokemon_type";
-import {
-  FlatList,
   ImageBackground,
   StyleSheet,
   Text,
-  View,
+  View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-const pokemonList = [
-  {
-    name: "Bulbasaur",
-    number: "#001",
-    types: [new GrassType(), new PoisonType()],
-    image: require("@/assets/images/bulbasaur.png"),
-  },
-  {
-    name: "Charmander",
-    number: "#002",
-    types: [new FireType(), new PoisonType()],
-    image: require("@/assets/images/bulbasaur.png"),
-  },
-  {
-    name: "Squirtle",
-    number: "#003",
-    types: [new WaterType(), new PoisonType()],
-    image: require("@/assets/images/bulbasaur.png"),
-  },
-  {
-    name: "Bulbasaur",
-    number: "#004",
-    types: [new GrassType(), new PoisonType()],
-    image: require("@/assets/images/bulbasaur.png"),
-  },
-  {
-    name: "Charmander",
-    number: "#005",
-    types: [new FireType(), new PoisonType()],
-    image: require("@/assets/images/bulbasaur.png"),
-  },
-  {
-    name: "Squirtle",
-    number: "#006",
-    types: [new WaterType(), new PoisonType()],
-    image: require("@/assets/images/bulbasaur.png"),
-  },
-];
+import PokemonsProvider from "../features/pokemons/provider/pokemons-provider";
 
 export default function HomeScreen() {
   return (
@@ -81,14 +36,9 @@ export default function HomeScreen() {
             style={styles.searchBar}
           />
         </ImageBackground>
-
-        <FlatList
-          style={styles.list}
-          data={pokemonList}
-          renderItem={({ item }) => <PokemonCard pokemon={item} />}
-          keyExtractor={(item) => item.number}
-          showsVerticalScrollIndicator={false}
-        />
+        <PokemonsProvider>
+          <PokemonList />
+        </PokemonsProvider>
       </View>
     </SafeAreaView>
   );
@@ -146,9 +96,5 @@ const styles = StyleSheet.create({
     marginTop: 24,
     marginBottom: 20,
     marginHorizontal: 32,
-  },
-  list: {
-    flex: 1,
-    marginBottom: 16,
   },
 });

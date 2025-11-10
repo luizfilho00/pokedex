@@ -35,7 +35,7 @@ export function PokemonCard({ pokemon, style }: PokemonCardProps) {
               color: TextColors.number,
             }}
           >
-            {pokemon.number}
+            {pokemon.id}
           </Text>
           <Text
             style={{
@@ -57,7 +57,7 @@ export function PokemonCard({ pokemon, style }: PokemonCardProps) {
           >
             {pokemon.types.map((type, _) => (
               <Badge
-                key={`${pokemon.number}-${type.name}`}
+                key={`${pokemon.id}-${type.name}`}
                 image={type.icon}
                 label={type.name.charAt(0).toUpperCase() + type.name.slice(1)}
                 backgroundColor={type.foregroundColor}
@@ -76,7 +76,7 @@ export function PokemonCard({ pokemon, style }: PokemonCardProps) {
         }}
       />
       <Image
-        source={pokemon.image}
+        source={{ uri: pokemon.image }}
         style={{
           width: 130,
           height: 130,
