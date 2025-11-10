@@ -1,17 +1,22 @@
 import { IconButton } from "@/components/ui/icon-button";
 import { SearchBar } from "@/components/ui/search-bar";
 import { TextColors } from "@/constants/theme";
+import PokemonsProvider, { usePokemonsProvider } from "@/features/pokemons/provider/pokemons-provider";
 import { PokemonList } from "@/features/pokemons/ui/pokemon-list";
-import {
-  ImageBackground,
-  StyleSheet,
-  Text,
-  View
-} from "react-native";
+import { ImageBackground, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import PokemonsProvider from "../features/pokemons/provider/pokemons-provider";
 
 export default function HomeScreen() {
+  return (
+    <PokemonsProvider>
+      <HomeComposer />
+    </PokemonsProvider>
+  );
+}
+
+function HomeComposer() {
+  const { filter } = usePokemonsProvider();
+
   return (
     <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
       <View style={styles.header}>
@@ -31,14 +36,12 @@ export default function HomeScreen() {
             Search for Pokémon by name or using the National Pokédex number.
           </Text>
           <SearchBar
-            onSearch={(text) => {}}
+            onSearch={filter}
             placeholder="What Pokémon are you looking for?"
             style={styles.searchBar}
           />
         </ImageBackground>
-        <PokemonsProvider>
-          <PokemonList />
-        </PokemonsProvider>
+        <PokemonList />
       </View>
     </SafeAreaView>
   );
@@ -47,18 +50,9 @@ export default function HomeScreen() {
 function TopBarActions() {
   return (
     <View style={styles.iconButtons}>
-      <IconButton
-        icon={require("@/assets/images/generation.png")}
-        onPress={() => {}}
-      />
-      <IconButton
-        icon={require("@/assets/images/sort.png")}
-        onPress={() => {}}
-      />
-      <IconButton
-        icon={require("@/assets/images/filter.png")}
-        onPress={() => {}}
-      />
+      <IconButton icon={require("@/assets/images/generation.png")} onPress={() => {}} />
+      <IconButton icon={require("@/assets/images/sort.png")} onPress={() => {}} />
+      <IconButton icon={require("@/assets/images/filter.png")} onPress={() => {}} />
     </View>
   );
 }

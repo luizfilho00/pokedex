@@ -1,5 +1,5 @@
 import { TextColors } from "@/constants/theme";
-import { PokemonModel } from "@/model/pokemon_model";
+import { PokemonModel } from "@/model/pokemon-model";
 import {
   Image,
   StyleProp,
@@ -98,5 +98,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: 24,
+    shadowColor: "#000",
+    shadowRadius: 10,
+    elevation: 5,
   },
 });
