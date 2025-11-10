@@ -1,6 +1,5 @@
 import { PokemonModel } from "@/model/pokemon_model";
 import { PokemonResponseModel } from "./pokemon-response-model";
-import { GrassType } from "@/model/pokemon_type";
 import { mapResponseTypeToPokemonType } from "./pokemon-type-mapper";
 
 export async function getPokemons(
