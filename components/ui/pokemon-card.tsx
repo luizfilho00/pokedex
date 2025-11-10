@@ -67,7 +67,6 @@ export function PokemonCard({ pokemon, style }: PokemonCardProps) {
         </View>
         <Image source={require("@/assets/images/pokeball_transparent.png")} />
       </View>
-
       <Image
         source={require("@/assets/images/card_pattern.png")}
         style={{
