@@ -1,6 +1,9 @@
 import { PokemonModel } from "@/model/pokemon-model";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { getPokemons } from "../api/pokemons-api";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { pokemonsRepository } from "../repository/pokemons-repository";
+import {
+  filterPokemonsUseCase,
+} from "../use-case/filter-pokemons-use-case";
 
 interface PokemonsState {
   loading: boolean;
@@ -12,51 +15,64 @@ interface PokemonsAction {
   filter(name: string): void;
 }
 
+interface SearchTermTimeout {
+  timeoutRef: number;
+  name: string;
+}
+
 export type PokemonValue = PokemonsState & PokemonsAction;
 
 export default function usePokemonsData(limit: number, offset: number) {
-  console.log("🔄 PokemonsProvider re-rendered");
-
   const [state, setState] = useState<PokemonsState>({
     loading: false,
     error: null,
     pokemons: null,
   });
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>("");
-  const [originalPokemons, setOriginalPokemons] = useState<PokemonModel[] | null>(null);
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const timerRef = useRef<SearchTermTimeout | null>(null);
+  console.log("🔄 PokemonsProvider rendered", {
+    loading: state.loading,
+    error: state.error,
+    success: state.pokemons !== null,
+  });
+
+  const pokemons = useMemo(() => {
+    if (!state.pokemons) return null;
+    return filterPokemonsUseCase.byName(state.pokemons, debouncedSearchTerm);
+  }, [state.pokemons, debouncedSearchTerm]);
 
   const filterByName = useCallback((name: string) => {
-    console.log("Filtering by name:", name);
-    setSearchTerm(name.toLowerCase());
-  }, []);
-  console.log("🎯 useCallback - filterByName created/recreated");
-
-  const filteredPokemons = useMemo(() => {
-    console.log("🔍 useMemo - filteredPokemons recalculated");
-    if (!originalPokemons) return null;
-    if (debouncedSearchTerm === "") return originalPokemons;
-    return originalPokemons.filter((pokemon) =>
-      pokemon.name.toLowerCase().includes(debouncedSearchTerm)
-    );
-  }, [originalPokemons, debouncedSearchTerm]);
-
-  useEffect(() => {
-    console.log("⏱️ useEffect - debounce timer setup");
-    const timer = setTimeout(() => {
-      setDebouncedSearchTerm(searchTerm);
+    console.log("⏳ filtering timeout set for:", name);
+    if (timerRef.current?.timeoutRef) {
+      console.log("❌ filtering timeout canceled for:", timerRef.current.name);
+      clearTimeout(timerRef.current.timeoutRef);
+    }
+    const timeout = setTimeout(() => {
+      console.log("🔍 filter called for:", name);
+      setDebouncedSearchTerm(name);
     }, 300);
-    return () => clearTimeout(timer);
-  }, [searchTerm]);
+    timerRef.current = {
+      timeoutRef: timeout,
+      name: name,
+    };
+  }, []);
 
   useEffect(() => {
-    console.log("🚀 useEffect - fetching pokemons started");
+    return () => {
+      if (timerRef.current?.timeoutRef) {
+        clearTimeout(timerRef.current.timeoutRef);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    console.log("🎉 useEffect() triggered");
     setState((prev) => ({ ...prev, loading: true }));
-    getPokemons(limit, offset)
+    pokemonsRepository
+      .fetchPokemons(limit, offset)
       .then((data) => {
         console.log("Fetched Pokemons:", data.length);
-        setOriginalPokemons(data);
-        setState((prev) => ({ ...prev, error: null }));
+        setState((prev) => ({ ...prev, pokemons: data, error: null }));
       })
       .catch((error) => {
         console.log("Error fetching Pokemons:", error);
@@ -67,14 +83,12 @@ export default function usePokemonsData(limit: number, offset: number) {
       });
   }, [limit, offset]);
 
-  const value: PokemonValue = useMemo(() => {
-    console.log("📦 useMemo - context value recalculated");
-    return {
-      ...state,
-      pokemons: filteredPokemons,
-      filter: filterByName,
-    };
-  }, [state, filteredPokemons, filterByName]);
+  const value: PokemonValue = {
+    loading: state.loading,
+    error: state.error,
+    pokemons: pokemons,
+    filter: filterByName,
+  };
 
   return value;
 }

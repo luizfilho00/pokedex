@@ -8,6 +8,7 @@ import {
 
 export async function getPokemons(limit: number, offset: number): Promise<PokemonModel[]> {
   try {
+    //TODO -> Simulate network delay (remove in production)
     await new Promise((resolve) => setTimeout(resolve, 2000));
     const response = await fetch(
       `https://pokeapi.co/api/v2/pokemon?limit=${limit}&offset=${offset}`

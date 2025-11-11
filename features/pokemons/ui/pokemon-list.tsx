@@ -1,14 +1,12 @@
 import { PokemonCard } from "@/components/ui/pokemon-card";
 import { LightColors } from "@/constants/theme";
 import {
-  usePokemonsProvider,
-} from "@/features/pokemons/hooks/use-pokemons-data";
-import {
   ActivityIndicator,
   FlatList,
   StyleSheet,
   Text
 } from "react-native";
+import { usePokemonsProvider } from "../provider/pokemons-provider";
 
 export function PokemonList() {
   const { pokemons, loading, error } = usePokemonsProvider();
