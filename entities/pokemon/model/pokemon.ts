@@ -1,4 +1,4 @@
-import { PokemonType } from "@/model/pokemon-type";
+import { PokemonType } from "./pokemon-type";
 
 export interface Pokemon {
   id: string;

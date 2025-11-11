@@ -1,6 +1,11 @@
 import { Pokemon, fetchPokemons } from "@/entities/pokemon";
+import { ILoadPokemonsRepository } from "./load-pokemons-repository.interface";
 
-class LoadPokemonsRepository {
+/**
+ * Implementation of ILoadPokemonsRepository.
+ * Handles Pokemon data loading with caching strategy.
+ */
+class LoadPokemonsRepositoryImpl implements ILoadPokemonsRepository {
   private cache: Map<string, Pokemon[]> = new Map();
 
   async loadPokemons(limit: number, offset: number): Promise<Pokemon[]> {
@@ -18,4 +23,16 @@ class LoadPokemonsRepository {
   }
 }
 
-export const loadPokemonsRepository = new LoadPokemonsRepository();
+/**
+ * Singleton instance for production use.
+ * Use this in your application code.
+ */
+export const loadPokemonsRepository: ILoadPokemonsRepository = new LoadPokemonsRepositoryImpl();
+
+/**
+ * Factory function for creating repository instances.
+ * Useful for testing with dependency injection.
+ */
+export const createLoadPokemonsRepository = (): ILoadPokemonsRepository => {
+  return new LoadPokemonsRepositoryImpl();
+};

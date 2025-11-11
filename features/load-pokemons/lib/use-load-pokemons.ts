@@ -2,6 +2,7 @@ import { Pokemon } from "@/entities/pokemon";
 import { filterPokemonsByName } from "@/features/filter-pokemons";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { loadPokemonsRepository } from "../api/load-pokemons-repository";
+import { ILoadPokemonsRepository } from "../api/load-pokemons-repository.interface";
 
 interface PokemonsState {
   loading: boolean;
@@ -14,7 +15,19 @@ interface SearchTermTimeout {
   name: string;
 }
 
-export function useLoadPokemons(limit: number, offset: number) {
+/**
+ * Hook for loading and filtering Pokemon data.
+ * Supports dependency injection for testing.
+ * 
+ * @param limit - Number of Pokemon to load
+ * @param offset - Pagination offset
+ * @param repository - Repository instance (injectable for testing)
+ */
+export function useLoadPokemons(
+  limit: number,
+  offset: number,
+  repository: ILoadPokemonsRepository = loadPokemonsRepository
+) {
   const [state, setState] = useState<PokemonsState>({
     loading: false,
     error: null,
@@ -51,7 +64,7 @@ export function useLoadPokemons(limit: number, offset: number) {
 
   useEffect(() => {
     setState((prev) => ({ ...prev, loading: true }));
-    loadPokemonsRepository
+    repository
       .loadPokemons(limit, offset)
       .then((data) => {
         setState((prev) => ({ ...prev, pokemons: data, error: null }));

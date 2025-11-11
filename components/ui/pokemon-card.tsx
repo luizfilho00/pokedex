@@ -1,5 +1,5 @@
 import { TextColors } from "@/constants/theme";
-import { PokemonModel } from "@/model/pokemon-model";
+import { Pokemon } from "@/entities/pokemon";
 import {
   Image,
   StyleProp,
@@ -11,7 +11,7 @@ import {
 import { Badge } from "./badge";
 
 interface PokemonCardProps {
-  pokemon: PokemonModel;
+  pokemon: Pokemon;
   style?: StyleProp<ViewStyle>;
 }
 

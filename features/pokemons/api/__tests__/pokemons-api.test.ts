@@ -1,4 +1,4 @@
-import { getPokemons } from "../pokemons-api";
+import { loadPokemonsRepository } from "@/features/load-pokemons";
 
 // Mock fetch globally
 global.fetch = jest.fn();
@@ -59,7 +59,7 @@ describe('Pokemons API', () => {
       } as Response);
 
     // Fast forward the setTimeout in your API (2000ms delay)
-    const pokemonsPromise = getPokemons(2, 0);
+    const pokemonsPromise = loadPokemonsRepository.loadPokemons(2, 0);
     jest.advanceTimersByTime(2000);
     const pokemons = await pokemonsPromise;
 
@@ -84,7 +84,7 @@ describe('Pokemons API', () => {
       .mockRejectedValueOnce(new Error('Network error'));
 
     // Fast forward the setTimeout
-    const pokemonsPromise = getPokemons(2, 0);
+    const pokemonsPromise = loadPokemonsRepository.loadPokemons(2, 0);
     jest.advanceTimersByTime(2000);
 
     // Expect the function to throw
@@ -100,7 +100,7 @@ describe('Pokemons API', () => {
       } as Response);
 
     // Fast forward the setTimeout
-    const pokemonsPromise = getPokemons(2, 0);
+    const pokemonsPromise = loadPokemonsRepository.loadPokemons(2, 0);
     jest.advanceTimersByTime(2000);
 
     // Expect the function to throw
