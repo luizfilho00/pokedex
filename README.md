@@ -1,8 +1,24 @@
-# Welcome to your Expo app 👋
+# Pokédex - React Native App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A modern Pokédex application built with React Native, Expo, and TypeScript, following **Feature-Sliced Design (FSD)** architecture principles.
 
-## Get started
+## 📱 Features
+
+- Browse Pokémon with beautiful cards showing types, images, and details
+- Real-time search and filtering by name
+- Smooth scrolling and optimized performance
+- Type-safe with TypeScript
+- Clean, maintainable architecture
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Node.js 18+ 
+- npm or yarn
+- Expo Go app (for mobile testing)
+
+### Installation
 
 1. Install dependencies
 
@@ -10,41 +26,182 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    npm install
    ```
 
-2. Start the app
+2. Start the development server
 
    ```bash
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+3. Run on your device
+   - Scan the QR code with Expo Go (Android) or Camera app (iOS)
+   - Press `a` for Android emulator
+   - Press `i` for iOS simulator
+   - Press `w` for web browser
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## 🏗️ Architecture - Feature-Sliced Design (FSD)
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+This project follows **Feature-Sliced Design**, a frontend architecture methodology that organizes code by business features and technical layers.
 
-## Get a fresh project
+### Project Structure
 
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+pokedex/
+├── app/               # Application entry point
+├── pages/             # Application screens/pages
+├── widgets/           # Composite UI blocks
+├── features/          # Business features (filter, load)
+├── entities/          # Business entities (Pokemon)
+├── components/        # Shared UI components
+└── constants/         # Theme and configuration
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### Layer Hierarchy
 
-## Learn more
+```
+┌─────────────────────────────────────────┐
+│              app/                       │  ← Entry Point
+└─────────────────────────────────────────┘
+                    ↓
+┌─────────────────────────────────────────┐
+│             pages/                      │  ← Page Composition
+└─────────────────────────────────────────┘
+                    ↓
+┌─────────────────────────────────────────┐
+│            widgets/                     │  ← Composite Blocks
+└─────────────────────────────────────────┘
+                    ↓
+┌──────────────────┬──────────────────────┐
+│    features/     │     features/        │  ← User Features
+│ filter-pokemons  │  load-pokemons       │
+└──────────────────┴──────────────────────┘
+                    ↓
+┌─────────────────────────────────────────┐
+│           entities/pokemon/             │  ← Domain Models
+└─────────────────────────────────────────┘
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+### Key Principles
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+✅ **Unidirectional dependency flow** - Layers only depend on layers below  
+✅ **Public APIs** - Each slice exposes a clear contract via `index.ts`  
+✅ **Feature isolation** - Features are independent and don't know about each other  
+✅ **Composition over configuration** - Direct imports instead of dependency injection  
 
-## Join the community
+### Layers Explained
 
-Join our community of developers creating universal apps.
+#### 📦 Entities (`entities/`)
+Domain-driven business entities.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```
+entities/pokemon/
+├── model/          # Pokemon, PokemonType models
+├── api/            # API calls and mappers
+├── ui/             # PokemonCard component
+└── index.ts        # Public API exports
+```
+
+#### ⚡ Features (`features/`)
+Isolated user interactions and business logic.
+
+- `filter-pokemons/` - Pure filtering function
+- `load-pokemons/` - Data loading with caching and debouncing
+
+#### 🧩 Widgets (`widgets/`)
+Composite UI blocks combining features and entities.
+
+```typescript
+// widgets/pokemon-list/
+export function PokemonListWidget({ limit, offset }) {
+  const { pokemons, loading, error } = useLoadPokemons(limit, offset);
+  return <FlatList data={pokemons} ... />;
+}
+```
+
+#### 📄 Pages (`pages/`)
+Application screens composing widgets and features.
+
+```typescript
+// pages/pokemon-list/
+export default function PokemonListPage() {
+  const { pokemons, filterByName } = useLoadPokemons(10, 0);
+  return <SafeAreaView>...</SafeAreaView>;
+}
+```
+
+## 🧪 Testing
+
+Run tests:
+
+```bash
+npm test
+```
+
+Run tests in watch mode:
+
+```bash
+npm run test:watch
+```
+
+## 🛠️ Tech Stack
+
+- **React Native** - Mobile framework
+- **Expo** - Development platform
+- **TypeScript** - Type safety
+- **React Hooks** - State management
+- **PokeAPI** - Pokémon data source
+
+## 📚 Code Organization Benefits
+
+1. **Scalability** - Add new features without touching existing ones
+2. **Maintainability** - Clear structure makes code easy to find
+3. **Testability** - Isolated features are simple to test
+4. **Team Collaboration** - Multiple developers can work independently
+5. **Reusability** - Features and entities work across multiple pages
+
+## 🔧 Development Patterns
+
+### Hook Composition
+
+```typescript
+// features/load-pokemons/model/use-load-pokemons.ts
+export function useLoadPokemons(limit: number, offset: number) {
+  const [state, setState] = useState<PokemonsState>({...});
+  const timerRef = useRef<SearchTermTimeout | null>(null);
+  
+  // Compose filter feature
+  const filteredPokemons = useMemo(() => {
+    return filterPokemonsByName(state.pokemons, debouncedSearchTerm);
+  }, [state.pokemons, debouncedSearchTerm]);
+  
+  return { loading, error, pokemons: filteredPokemons, filterByName };
+}
+```
+
+### Public API Pattern
+
+```typescript
+// entities/pokemon/index.ts
+export { Pokemon } from "./model/pokemon";
+export { fetchPokemons } from "./api/pokemon-api";
+export { PokemonCard } from "./ui/pokemon-card";
+```
+
+## 📖 Additional Documentation
+
+- `FSD_ARCHITECTURE.md` - Detailed architecture documentation
+- `MIGRATION_SUMMARY.md` - Migration guide from Clean Architecture to FSD
+
+## 🤝 Contributing
+
+Contributions are welcome! Please follow the FSD architecture principles when adding new features.
+
+## 📄 License
+
+This project is for educational purposes.
+
+## 🔗 Resources
+
+- [Feature-Sliced Design](https://feature-sliced.design/)
+- [Expo Documentation](https://docs.expo.dev/)
+- [React Native Docs](https://reactnative.dev/)
+- [PokeAPI](https://pokeapi.co/)
