@@ -1,19 +1,22 @@
 import { Pokemon } from "@/entities/pokemon";
-import { filterPokemonsByName } from "@/features/filter-pokemons";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { loadPokemonsRepository } from "../api/load-pokemons-repository";
 import { ILoadPokemonsRepository } from "../api/load-pokemons-repository.interface";
 
-interface PokemonsState {
+interface LoadPokemonsState {
   loading: boolean;
   isNextPageLoading: boolean;
   error: string | null;
   pokemons: Pokemon[] | null;
 }
 
-interface SearchTermTimeout {
-  timeoutRef: number;
-  name: string;
+interface LoadPokemonsAction {
+  fetchNextPage: () => void;
+}
+
+export interface LoadPokemonsResult {
+  state: LoadPokemonsState;
+  actions: LoadPokemonsAction;
 }
 
 /**
@@ -29,56 +32,31 @@ export function useLoadPokemons(
   offset: number = 0,
   repository: ILoadPokemonsRepository = loadPokemonsRepository
 ) {
-  const [state, setState] = useState<PokemonsState>({
+  const [state, setState] = useState<LoadPokemonsState>({
     loading: false,
     isNextPageLoading: false,
     error: null,
     pokemons: null,
   });
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
-  const timerRef = useRef<SearchTermTimeout | null>(null);
   const currentOffset = useRef(offset);
-
-  const filteredPokemons = useMemo(() => {
-    if (!state.pokemons) return null;
-    return filterPokemonsByName(state.pokemons, debouncedSearchTerm);
-  }, [state.pokemons, debouncedSearchTerm]);
-
-  const filterByName = useCallback((name: string) => {
-    if (timerRef.current?.timeoutRef) {
-      clearTimeout(timerRef.current.timeoutRef);
-    }
-    const timeout = setTimeout(() => {
-      setDebouncedSearchTerm(name);
-    }, 300);
-    timerRef.current = {
-      timeoutRef: timeout,
-      name: name,
-    };
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      if (timerRef.current?.timeoutRef) {
-        clearTimeout(timerRef.current.timeoutRef);
-      }
-    };
-  }, []);
 
   const fetchNextPage = useCallback(() => {
     console.log("fetchNextPage - before return");
-    if (state.isNextPageLoading || debouncedSearchTerm.length != 0) return;
+    if (state.isNextPageLoading) return;
     console.log("fetchNextPage - triggered api - offset", currentOffset.current);
     setState((prev) => ({ ...prev, isNextPageLoading: true }));
     currentOffset.current = currentOffset.current + limit;
     repository
       .loadPokemons(limit, currentOffset.current)
       .then((pokemons) =>
-        setState((prev) => ({ ...prev, pokemons: [...(prev.pokemons ?? []), ...pokemons] }))
+        setState((prev) => ({
+          ...prev,
+          pokemons: [...(prev.pokemons ?? []), ...pokemons],
+        }))
       )
       .catch((error) => setState((prev) => ({ ...prev, error: error.message })))
       .finally(() => setState((prev) => ({ ...prev, isNextPageLoading: false })));
-  }, [state.isNextPageLoading, limit, currentOffset, repository, debouncedSearchTerm]);
+  }, [state.isNextPageLoading, limit, currentOffset, repository]);
 
   useEffect(() => {
     setState((prev) => ({ ...prev, loading: true }));
@@ -94,15 +72,17 @@ export function useLoadPokemons(
       .finally(() => {
         setState((prev) => ({ ...prev, loading: false }));
       });
-  }, [limit, offset]);
+  }, [limit, offset, repository]);
 
   return {
-    loading: state.loading,
-    error: state.error,
-    isNextPageLoading: state.isNextPageLoading,
-    isSearching: debouncedSearchTerm.length > 0,
-    pokemons: filteredPokemons,
-    filterByName,
-    fetchNextPage,
-  };
+    state: {
+      loading: state.loading,
+      error: state.error,
+      isNextPageLoading: state.isNextPageLoading,
+      pokemons: state.pokemons,
+    },
+    actions: {
+      fetchNextPage: fetchNextPage,
+    },
+  } as LoadPokemonsResult;
 }
