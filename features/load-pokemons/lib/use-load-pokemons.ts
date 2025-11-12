@@ -1,5 +1,5 @@
 import { Pokemon } from "@/entities/pokemon";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { loadPokemonsRepository } from "../api/load-pokemons-repository";
 import { ILoadPokemonsRepository } from "../api/load-pokemons-repository.interface";
 
@@ -41,22 +41,26 @@ export function useLoadPokemons(
   const currentOffset = useRef(offset);
 
   const fetchNextPage = useCallback(() => {
-    console.log("fetchNextPage - before return");
-    if (state.isNextPageLoading) return;
-    console.log("fetchNextPage - triggered api - offset", currentOffset.current);
-    setState((prev) => ({ ...prev, isNextPageLoading: true }));
-    currentOffset.current = currentOffset.current + limit;
-    repository
-      .loadPokemons(limit, currentOffset.current)
-      .then((pokemons) =>
-        setState((prev) => ({
-          ...prev,
-          pokemons: [...(prev.pokemons ?? []), ...pokemons],
-        }))
-      )
-      .catch((error) => setState((prev) => ({ ...prev, error: error.message })))
-      .finally(() => setState((prev) => ({ ...prev, isNextPageLoading: false })));
-  }, [state.isNextPageLoading, limit, currentOffset, repository]);
+    setState((prev) => {
+      if (prev.isNextPageLoading) return prev;
+      
+      currentOffset.current = currentOffset.current + limit;
+      repository
+        .loadPokemons(limit, currentOffset.current)
+        .then((pokemons) =>
+          setState((state) => ({
+            ...state,
+            pokemons: [...(state.pokemons ?? []), ...pokemons],
+          }))
+        )
+        .catch((error) => setState((state) => ({ ...state, error: error.message })))
+        .finally(() => setState((state) => ({ ...state, isNextPageLoading: false })));
+      
+      return { ...prev, isNextPageLoading: true };
+    });
+  }, [limit, repository]);
+
+  const actions = useMemo(() => ({ fetchNextPage }), [fetchNextPage]);
 
   useEffect(() => {
     setState((prev) => ({ ...prev, loading: true }));
@@ -74,15 +78,18 @@ export function useLoadPokemons(
       });
   }, [limit, offset, repository]);
 
-  return {
-    state: {
+  const memoizedState = useMemo(
+    () => ({
       loading: state.loading,
       error: state.error,
       isNextPageLoading: state.isNextPageLoading,
       pokemons: state.pokemons,
-    },
-    actions: {
-      fetchNextPage: fetchNextPage,
-    },
+    }),
+    [state.loading, state.error, state.isNextPageLoading, state.pokemons]
+  );
+
+  return {
+    state: memoizedState,
+    actions,
   } as LoadPokemonsResult;
 }

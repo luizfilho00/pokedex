@@ -17,14 +17,13 @@ interface PokemonCardProps {
 
 export function PokemonCard({ pokemon, style }: PokemonCardProps) {
   return (
-    <View style={styles.invisibleCardContainer}>
+    <View style={[styles.invisibleCardContainer, style]}>
       <View
         style={[
           styles.cardContainer,
           {
             backgroundColor: pokemon.types[0].backgroundColor,
           },
-          style,
         ]}
       >
         <View style={{ padding: 20 }}>
@@ -91,13 +90,11 @@ export function PokemonCard({ pokemon, style }: PokemonCardProps) {
 const styles = StyleSheet.create({
   invisibleCardContainer: {
     position: "relative",
-    marginHorizontal: 32,
   },
   cardContainer: {
     borderRadius: 10,
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: 24,
-    marginBottom: 16,
   },
 });

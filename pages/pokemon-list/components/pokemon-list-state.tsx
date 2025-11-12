@@ -1,11 +1,20 @@
 import { LightColors } from "@/constants/theme";
+import { memo } from "react";
 import { ActivityIndicator, Text } from "react-native";
+import { useRenderCount } from "../hooks/use-render-count";
 import { styles } from "../style";
-import { usePokemonProvider } from "../provider/pokemons-provider";
 
-export function PokemonListState() {
-  const { isLoading, error } = usePokemonProvider();
-  if (isLoading) {
+interface PokemonListStateProps {
+  loading: boolean;
+  error: string | null;
+}
+
+export const PokemonListState = memo(function PokemonListState({
+  loading,
+  error,
+}: PokemonListStateProps) {
+  useRenderCount("PokemonListState");
+  if (loading) {
     return (
       <ActivityIndicator
         color={LightColors.primary}
@@ -18,4 +27,4 @@ export function PokemonListState() {
     return <Text style={styles.error}>Error: {error}</Text>;
   }
   return null;
-}
+});

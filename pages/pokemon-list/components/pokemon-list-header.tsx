@@ -1,11 +1,18 @@
 import { IconButton } from "@/components/ui/icon-button";
 import { SearchBar } from "@/components/ui/search-bar";
+import { memo } from "react";
 import { ImageBackground, Text, View } from "react-native";
+import { useRenderCount } from "../hooks/use-render-count";
 import { styles } from "../style";
-import { usePokemonSearchProvider } from "../provider/pokemon-search-provider";
 
-export function PokemonListHeader() {
-  const { onSearch } = usePokemonSearchProvider();
+interface PokemonListHeaderProps {
+  onSearch: (name: string) => void;
+}
+
+export const PokemonListHeader = memo(function PokemonListHeader({
+  onSearch,
+}: PokemonListHeaderProps) {
+  useRenderCount("PokemonListHeader");
   return (
     <ImageBackground
       source={require("@/assets/images/gradient_pokeball.png")}
@@ -23,7 +30,7 @@ export function PokemonListHeader() {
       />
     </ImageBackground>
   );
-}
+});
 
 function TopBarActions() {
   return (

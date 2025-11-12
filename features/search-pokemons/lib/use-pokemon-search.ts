@@ -43,6 +43,8 @@ export function usePokemonSearch(pokemons: Pokemon[] | null) {
     };
   }, []);
 
+  const actions = useMemo(() => ({ onSearch }), [onSearch]);
+
   useEffect(() => {
     return () => {
       if (timerRef.current?.timeoutRef) {
@@ -51,13 +53,16 @@ export function usePokemonSearch(pokemons: Pokemon[] | null) {
     };
   }, []);
 
-  return{
-    state: {
+  const memoizedState = useMemo(
+    () => ({
       pokemons: filteredPokemons,
       isSearching: debouncedSearchTerm.length > 0,
-    },
-    actions: {
-      onSearch: onSearch,
-    },
+    }),
+    [filteredPokemons, debouncedSearchTerm]
+  );
+
+  return {
+    state: memoizedState,
+    actions,
   } as PokemonSearchResult;
 }

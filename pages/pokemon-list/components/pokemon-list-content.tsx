@@ -1,38 +1,44 @@
-import { LightColors } from "@/constants/theme";
-import { PokemonCard } from "@/entities/pokemon";
-import { ActivityIndicator, FlatList } from "react-native";
+import { Pokemon, PokemonCard } from "@/entities/pokemon";
+import { FlatList, NativeScrollEvent, NativeSyntheticEvent } from "react-native";
+import { useRenderCount } from "../hooks/use-render-count";
 import { styles } from "../style";
-import { usePokemonListScroll } from "../hooks/use-pokemon-list-scroll";
-import { usePokemonProvider } from "../provider/pokemons-provider";
-import { usePokemonSearchProvider } from "../provider/pokemon-search-provider";
+import { forwardRef } from "react";
 
-export function PokemonListContent() {
-  const { pokemons, isNextPageLoading, fetchNextPage } = usePokemonProvider();
-  const { pokemons: searchedPokemons, isSearching } = usePokemonSearchProvider();
-  const displayPokemons = isSearching && searchedPokemons ? searchedPokemons : pokemons;
-  const { refList, handleScroll } = usePokemonListScroll(pokemons, isSearching);
-
-  return (
-    <FlatList
-      ref={refList}
-      style={styles.list}
-      data={displayPokemons}
-      renderItem={({ item }) => <PokemonCard pokemon={item} style={styles.card} />}
-      keyExtractor={(item) => item.id}
-      showsVerticalScrollIndicator={false}
-      onEndReached={isSearching ? undefined : fetchNextPage}
-      onEndReachedThreshold={0.1}
-      scrollEventThrottle={16}
-      onScroll={handleScroll}
-      ListFooterComponent={
-        isNextPageLoading && !isSearching ? (
-          <ActivityIndicator
-            color={LightColors.primary}
-            size={24}
-            style={{ padding: 8 }}
-          />
-        ) : null
-      }
-    />
-  );
+interface PokemonListContentProps {
+  pokemons: Pokemon[];
+  footer: React.ReactElement | null;
+  onEndReached?: () => void;
+  onScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
 }
+
+export const PokemonListContent = forwardRef<FlatList<Pokemon>, PokemonListContentProps>(
+  function PokemonListContent(
+    { pokemons, footer, onEndReached, onScroll }: PokemonListContentProps,
+    ref
+  ) {
+    useRenderCount("PokemonListContent");
+    return (
+      <FlatList
+        ref={ref}
+        style={styles.list}
+        data={pokemons}
+        renderItem={({ item }) => (
+          <PokemonCard
+            pokemon={item}
+            style={{
+              marginVertical: 4,
+              marginHorizontal: 16,
+            }}
+          />
+        )}
+        keyExtractor={(item) => item.id}
+        showsVerticalScrollIndicator={false}
+        onEndReached={onEndReached}
+        onEndReachedThreshold={0.1}
+        scrollEventThrottle={16}
+        onScroll={onScroll}
+        ListFooterComponent={footer}
+      />
+    );
+  }
+);
