@@ -1,14 +1,15 @@
 import { Pokemon, PokemonCard } from "@/entities/pokemon";
-import { FlatList, NativeScrollEvent, NativeSyntheticEvent } from "react-native";
+import { Animated, FlatList, NativeScrollEvent, NativeSyntheticEvent } from "react-native";
 import { useRenderCount } from "../hooks/use-render-count";
 import { styles } from "../style";
 import { forwardRef } from "react";
+import { ScrollHandlerProcessed } from "react-native-reanimated";
 
 interface PokemonListContentProps {
   pokemons: Pokemon[];
   footer: React.ReactElement | null;
   onEndReached?: () => void;
-  onScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
+  onScroll: any;
 }
 
 export const PokemonListContent = forwardRef<FlatList<Pokemon>, PokemonListContentProps>(
@@ -18,7 +19,7 @@ export const PokemonListContent = forwardRef<FlatList<Pokemon>, PokemonListConte
   ) {
     useRenderCount("PokemonListContent");
     return (
-      <FlatList
+      <Animated.FlatList
         ref={ref}
         style={styles.list}
         data={pokemons}

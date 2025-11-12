@@ -16,7 +16,6 @@ export const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: "bold",
     paddingHorizontal: 16,
-    paddingTop: 35,
     color: TextColors.black,
   },
   description: {
@@ -35,7 +34,7 @@ export const styles = StyleSheet.create({
   },
   searchBar: {
     marginTop: 24,
-    marginBottom: 20,
+    // marginBottom: 20,
     marginHorizontal: 16,
   },
   list: {
