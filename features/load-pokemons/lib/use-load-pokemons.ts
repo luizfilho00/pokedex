@@ -6,6 +6,7 @@ import { ILoadPokemonsRepository } from "../api/load-pokemons-repository.interfa
 
 interface PokemonsState {
   loading: boolean;
+  isNextPageLoading: boolean;
   error: string | null;
   pokemons: Pokemon[] | null;
 }
@@ -18,23 +19,25 @@ interface SearchTermTimeout {
 /**
  * Hook for loading and filtering Pokemon data.
  * Supports dependency injection for testing.
- * 
+ *
  * @param limit - Number of Pokemon to load
  * @param offset - Pagination offset
  * @param repository - Repository instance (injectable for testing)
  */
 export function useLoadPokemons(
-  limit: number,
-  offset: number,
+  limit: number = 10,
+  offset: number = 0,
   repository: ILoadPokemonsRepository = loadPokemonsRepository
 ) {
   const [state, setState] = useState<PokemonsState>({
     loading: false,
+    isNextPageLoading: false,
     error: null,
     pokemons: null,
   });
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const timerRef = useRef<SearchTermTimeout | null>(null);
+  const currentOffset = useRef(offset);
 
   const filteredPokemons = useMemo(() => {
     if (!state.pokemons) return null;
@@ -62,11 +65,27 @@ export function useLoadPokemons(
     };
   }, []);
 
+  const fetchNextPage = useCallback(() => {
+    console.log("fetchNextPage - before return");
+    if (state.isNextPageLoading || debouncedSearchTerm.length != 0) return;
+    console.log("fetchNextPage - triggered api - offset", currentOffset.current);
+    setState((prev) => ({ ...prev, isNextPageLoading: true }));
+    currentOffset.current = currentOffset.current + limit;
+    repository
+      .loadPokemons(limit, currentOffset.current)
+      .then((pokemons) =>
+        setState((prev) => ({ ...prev, pokemons: [...(prev.pokemons ?? []), ...pokemons] }))
+      )
+      .catch((error) => setState((prev) => ({ ...prev, error: error.message })))
+      .finally(() => setState((prev) => ({ ...prev, isNextPageLoading: false })));
+  }, [state.isNextPageLoading, limit, currentOffset, repository, debouncedSearchTerm]);
+
   useEffect(() => {
     setState((prev) => ({ ...prev, loading: true }));
     repository
       .loadPokemons(limit, offset)
       .then((data) => {
+        currentOffset.current = offset;
         setState((prev) => ({ ...prev, pokemons: data, error: null }));
       })
       .catch((error) => {
@@ -80,7 +99,10 @@ export function useLoadPokemons(
   return {
     loading: state.loading,
     error: state.error,
+    isNextPageLoading: state.isNextPageLoading,
+    isSearching: debouncedSearchTerm.length > 0,
     pokemons: filteredPokemons,
     filterByName,
+    fetchNextPage,
   };
 }

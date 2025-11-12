@@ -3,11 +3,23 @@ import { SearchBar } from "@/components/ui/search-bar";
 import { LightColors, TextColors } from "@/constants/theme";
 import { PokemonCard } from "@/entities/pokemon";
 import { useLoadPokemons } from "@/features/load-pokemons";
+import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, FlatList, ImageBackground, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function PokemonListPage() {
-  const { pokemons, loading, error, filterByName } = useLoadPokemons(10, 0);
+  const { pokemons, loading, error, filterByName, fetchNextPage, isNextPageLoading, isSearching } =
+    useLoadPokemons();
+  const refScrollOffset = useRef(0);
+  const refList = useRef<FlatList>(null);
+  
+  useEffect(() => {
+    if (isSearching && refScrollOffset.current <= 0) return;
+    refList.current?.scrollToOffset({
+      offset: refScrollOffset.current,
+      animated: false,
+    });
+  }, [isSearching, refScrollOffset, refList]);
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
@@ -34,22 +46,29 @@ export default function PokemonListPage() {
           />
         </ImageBackground>
         {loading && (
-          <ActivityIndicator
-            color={LightColors.primary}
-            size={"large"}
-            style={styles.progress}
-          />
+          <ActivityIndicator color={LightColors.primary} size={"large"} style={styles.progress} />
         )}
         {error && <Text style={styles.error}>Error: {error}</Text>}
         {pokemons && (
           <FlatList
+            ref={refList}
             style={styles.list}
             data={pokemons}
-            renderItem={({ item }) => (
-              <PokemonCard pokemon={item} style={styles.card} />
-            )}
+            renderItem={({ item }) => <PokemonCard pokemon={item} style={styles.card} />}
             keyExtractor={(item) => item.id}
             showsVerticalScrollIndicator={false}
+            onEndReached={fetchNextPage}
+            onEndReachedThreshold={0.1}
+            scrollEventThrottle={16}
+            onScroll={(event) => {
+              if (isSearching) return;
+              refScrollOffset.current = event.nativeEvent.contentOffset.y;
+            }}
+            ListFooterComponent={
+              <>
+                {isNextPageLoading && <ActivityIndicator color={LightColors.primary} size={24} />}
+              </>
+            }
           />
         )}
       </View>
