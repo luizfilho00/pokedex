@@ -1,15 +1,18 @@
 import { LightColors } from "@/constants/theme";
 import { ActivityIndicator, Text } from "react-native";
 import { styles } from "../style";
+import { usePokemonProvider } from "../provider/pokemons-provider";
 
-interface PokemonListStateProps {
-  loading: boolean;
-  error: string | null;
-}
-
-export function PokemonListState({ loading, error }: PokemonListStateProps) {
-  if (loading) {
-    return <ActivityIndicator color={LightColors.primary} size="large" style={styles.progress} />;
+export function PokemonListState() {
+  const { isLoading, error } = usePokemonProvider();
+  if (isLoading) {
+    return (
+      <ActivityIndicator
+        color={LightColors.primary}
+        size="large"
+        style={styles.progress}
+      />
+    );
   }
   if (error) {
     return <Text style={styles.error}>Error: {error}</Text>;

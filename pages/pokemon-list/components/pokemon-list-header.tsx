@@ -2,12 +2,10 @@ import { IconButton } from "@/components/ui/icon-button";
 import { SearchBar } from "@/components/ui/search-bar";
 import { ImageBackground, Text, View } from "react-native";
 import { styles } from "../style";
+import { usePokemonSearchProvider } from "../provider/pokemon-search-provider";
 
-interface PokemonListHeaderProps {
-  onSearch: (name: string) => void;
-}
-
-export function PokemonListHeader({ onSearch }: PokemonListHeaderProps) {
+export function PokemonListHeader() {
+  const { onSearch } = usePokemonSearchProvider();
   return (
     <ImageBackground
       source={require("@/assets/images/gradient_pokeball.png")}

@@ -1,39 +1,38 @@
 import { LightColors } from "@/constants/theme";
-import { Pokemon, PokemonCard } from "@/entities/pokemon";
-import { forwardRef } from "react";
+import { PokemonCard } from "@/entities/pokemon";
 import { ActivityIndicator, FlatList } from "react-native";
 import { styles } from "../style";
+import { usePokemonListScroll } from "../hooks/use-pokemon-list-scroll";
+import { usePokemonProvider } from "../provider/pokemons-provider";
+import { usePokemonSearchProvider } from "../provider/pokemon-search-provider";
 
-interface PokemonListContentProps {
-  pokemons: Pokemon[];
-  isSearching: boolean;
-  isNextPageLoading: boolean;
-  onEndReached?: () => void;
-  onScroll: (event: any) => void;
+export function PokemonListContent() {
+  const { pokemons, isNextPageLoading, fetchNextPage } = usePokemonProvider();
+  const { pokemons: searchedPokemons, isSearching } = usePokemonSearchProvider();
+  const displayPokemons = isSearching && searchedPokemons ? searchedPokemons : pokemons;
+  const { refList, handleScroll } = usePokemonListScroll(pokemons, isSearching);
+
+  return (
+    <FlatList
+      ref={refList}
+      style={styles.list}
+      data={displayPokemons}
+      renderItem={({ item }) => <PokemonCard pokemon={item} style={styles.card} />}
+      keyExtractor={(item) => item.id}
+      showsVerticalScrollIndicator={false}
+      onEndReached={isSearching ? undefined : fetchNextPage}
+      onEndReachedThreshold={0.1}
+      scrollEventThrottle={16}
+      onScroll={handleScroll}
+      ListFooterComponent={
+        isNextPageLoading && !isSearching ? (
+          <ActivityIndicator
+            color={LightColors.primary}
+            size={24}
+            style={{ padding: 8 }}
+          />
+        ) : null
+      }
+    />
+  );
 }
-
-export const PokemonListContent = forwardRef<FlatList, PokemonListContentProps>(
-  ({ pokemons, isSearching, isNextPageLoading, onEndReached, onScroll }, ref) => {
-    return (
-      <FlatList
-        ref={ref}
-        style={styles.list}
-        data={pokemons}
-        renderItem={({ item }) => <PokemonCard pokemon={item} style={styles.card} />}
-        keyExtractor={(item) => item.id}
-        showsVerticalScrollIndicator={false}
-        onEndReached={onEndReached}
-        onEndReachedThreshold={0.1}
-        scrollEventThrottle={16}
-        onScroll={onScroll}
-        ListFooterComponent={
-          isNextPageLoading && !isSearching ? (
-            <ActivityIndicator color={LightColors.primary} size={24} style={{ padding: 8 }} />
-          ) : null
-        }
-      />
-    );
-  }
-);
-
-PokemonListContent.displayName = "PokemonListContent";
