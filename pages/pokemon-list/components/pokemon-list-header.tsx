@@ -1,11 +1,7 @@
 import { IconButton } from "@/components/ui/icon-button";
 import { SearchBar } from "@/components/ui/search-bar";
 import { memo } from "react";
-import {
-  ImageBackground,
-  Text,
-  View,
-} from "react-native";
+import { ImageBackground, Text, View } from "react-native";
 import { useRenderCount } from "../hooks/use-render-count";
 import { styles } from "../style";
 import Animated, {
@@ -16,53 +12,65 @@ import Animated, {
 } from "react-native-reanimated";
 
 interface PokemonListHeaderProps {
-  scrollY: SharedValue<number>;
+  headerProgress: SharedValue<number>;
   onSearch: (name: string) => void;
 }
 
 export const PokemonListHeader = memo(function PokemonListHeader({
   onSearch,
-  scrollY,
+  headerProgress,
 }: PokemonListHeaderProps) {
   useRenderCount("PokemonListHeader");
   const headerHeight = 300;
   const halfHeaderHeight = 140;
-  const headerStyle = useAnimatedStyle(() => ({
-    height: interpolate(
-      scrollY.value,
-      [0, headerHeight],
-      [headerHeight, halfHeaderHeight],
-      Extrapolation.CLAMP
-    ),
-  }));
-  const opacity = useAnimatedStyle(() => ({
-    opacity: interpolate(
-      scrollY.value,
-      [0, halfHeaderHeight],
-      [1, 0],
-      Extrapolation.CLAMP
-    ),
-  }));
-  const headerTextStyle = useAnimatedStyle(() => ({
-    paddingTop: interpolate(
-      scrollY.value,
-      [0, halfHeaderHeight],
-      [35, 0],
-      Extrapolation.CLAMP
-    ),
-  }));
-  const searchBoxStyle = useAnimatedStyle(() => ({
-    transform: [
-      {
-        translateY: interpolate(
-          scrollY.value,
-          [0, headerHeight],
-          [0, -halfHeaderHeight],
-          Extrapolation.CLAMP
-        ),
-      },
-    ],
-  }));
+  const headerStyle = useAnimatedStyle(
+    () => ({
+      height: interpolate(
+        headerProgress.value,
+        [0, headerHeight],
+        [headerHeight, halfHeaderHeight],
+        Extrapolation.CLAMP
+      ),
+    }),
+    [headerProgress]
+  );
+  const opacity = useAnimatedStyle(
+    () => ({
+      opacity: interpolate(
+        headerProgress.value,
+        [0, halfHeaderHeight],
+        [1, 0],
+        Extrapolation.CLAMP
+      ),
+    }),
+    [headerProgress]
+  );
+  const headerTextStyle = useAnimatedStyle(
+    () => ({
+      paddingTop: interpolate(
+        headerProgress.value,
+        [0, halfHeaderHeight],
+        [35, 0],
+        Extrapolation.CLAMP
+      ),
+    }),
+    [headerProgress]
+  );
+  const searchBoxStyle = useAnimatedStyle(
+    () => ({
+      transform: [
+        {
+          translateY: interpolate(
+            headerProgress.value,
+            [0, headerHeight],
+            [0, -halfHeaderHeight],
+            Extrapolation.CLAMP
+          ),
+        },
+      ],
+    }),
+    [headerProgress]
+  );
 
   return (
     <Animated.View style={{ ...headerStyle }}>

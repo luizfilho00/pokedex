@@ -27,18 +27,31 @@ export default function PokemonListPage() {
     : loadPokemonsState.pokemons;
   const showFooterLoading =
     loadPokemonsState.isNextPageLoading && !searchState.isSearching;
-  const scrollY = useSharedValue(0);
+  const headerProgress = useSharedValue(0);
+  const lastScrollY = useSharedValue(0);
 
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (event) => {
-      scrollY.value = event.contentOffset.y;
+      const currentY = event.contentOffset.y;
       runOnJS(setOffsetY)(event.contentOffset.y);
+      const delta = currentY - lastScrollY.value;
+      if (delta > 0) {
+        // Scrolling down - collapse
+        headerProgress.value = Math.min(1000, headerProgress.value + delta);
+      } else if (delta < 0) {
+        // Scrolling up - expand
+        headerProgress.value = Math.max(0, headerProgress.value + delta);
+      }
+      lastScrollY.value = currentY;
     },
   });
 
   return (
     <View style={styles.header}>
-      <PokemonListHeader onSearch={searchActions.onSearch} scrollY={scrollY} />
+      <PokemonListHeader
+        onSearch={searchActions.onSearch}
+        headerProgress={headerProgress}
+      />
       <PokemonListState
         loading={loadPokemonsState.loading}
         error={loadPokemonsState.error}

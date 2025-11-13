@@ -14,12 +14,10 @@ export function usePokemonListScroll(pokemons: Pokemon[] | null, isSearching: bo
     const previousLength = refPreviousLength.current;
     // Restore scroll when clearing search
     if (wasSearching && !isSearching && pokemons) {
-      setTimeout(() => {
-        refList.current?.scrollToOffset({
-          offset: refOffset.current,
-          animated: true,
-        });
-      }, 100);
+      refList.current?.scrollToOffset({
+        offset: refOffset.current,
+        animated: true,
+      });
     }
     // Auto-scroll when new items added (only if NOT coming from search)
     else if (!isSearching && currentLength > previousLength && refOffset.current > 0) {
