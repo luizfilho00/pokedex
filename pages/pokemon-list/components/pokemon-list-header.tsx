@@ -13,23 +13,20 @@ import Animated, {
   interpolate,
   SharedValue,
   useAnimatedStyle,
-  withTiming,
 } from "react-native-reanimated";
 
 interface PokemonListHeaderProps {
   scrollY: SharedValue<number>;
-  headerHeight: number;
   onSearch: (name: string) => void;
 }
 
 export const PokemonListHeader = memo(function PokemonListHeader({
   onSearch,
   scrollY,
-  headerHeight,
 }: PokemonListHeaderProps) {
   useRenderCount("PokemonListHeader");
-  const halfHeaderHeight = 120;
-  const quarterHeaderHeight = headerHeight / 2;
+  const headerHeight = 300;
+  const halfHeaderHeight = 140;
   const headerStyle = useAnimatedStyle(() => ({
     height: interpolate(
       scrollY.value,
@@ -60,7 +57,7 @@ export const PokemonListHeader = memo(function PokemonListHeader({
         translateY: interpolate(
           scrollY.value,
           [0, headerHeight],
-          [0, -quarterHeaderHeight],
+          [0, -halfHeaderHeight],
           Extrapolation.CLAMP
         ),
       },

@@ -11,8 +11,10 @@ class LoadPokemonsRepositoryImpl implements ILoadPokemonsRepository {
   async loadPokemons(limit: number, offset: number): Promise<Pokemon[]> {
     const cacheKey = `${limit}-${offset}`;
     if (this.cache.has(cacheKey)) {
+      console.log("Loading from cache", limit, offset)
       return this.cache.get(cacheKey)!;
     }
+      console.log("Loading from API", limit, offset)
     const data = await fetchPokemons(limit, offset);
     this.cache.set(cacheKey, data);
     return data;

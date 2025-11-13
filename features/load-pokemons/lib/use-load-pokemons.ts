@@ -8,6 +8,7 @@ interface LoadPokemonsState {
   isNextPageLoading: boolean;
   error: string | null;
   pokemons: Pokemon[] | null;
+  endOfItems: boolean;
 }
 
 interface LoadPokemonsAction {
@@ -37,13 +38,13 @@ export function useLoadPokemons(
     isNextPageLoading: false,
     error: null,
     pokemons: null,
+    endOfItems: false,
   });
   const currentOffset = useRef(offset);
 
   const fetchNextPage = useCallback(() => {
     setState((prev) => {
       if (prev.isNextPageLoading) return prev;
-      
       currentOffset.current = currentOffset.current + limit;
       repository
         .loadPokemons(limit, currentOffset.current)
@@ -51,11 +52,17 @@ export function useLoadPokemons(
           setState((state) => ({
             ...state,
             pokemons: [...(state.pokemons ?? []), ...pokemons],
+            endOfItems: pokemons.length < limit,
+            isNextPageLoading: false,
           }))
         )
-        .catch((error) => setState((state) => ({ ...state, error: error.message })))
-        .finally(() => setState((state) => ({ ...state, isNextPageLoading: false })));
-      
+        .catch((error) =>
+          setState((state) => ({
+            ...state,
+            error: error.message,
+            isNextPageLoading: false,
+          }))
+        );
       return { ...prev, isNextPageLoading: true };
     });
   }, [limit, repository]);
@@ -68,13 +75,10 @@ export function useLoadPokemons(
       .loadPokemons(limit, offset)
       .then((data) => {
         currentOffset.current = offset;
-        setState((prev) => ({ ...prev, pokemons: data, error: null }));
+        setState((prev) => ({ ...prev, pokemons: data, error: null, loading: false }));
       })
       .catch((error) => {
-        setState((prev) => ({ ...prev, error: error.message }));
-      })
-      .finally(() => {
-        setState((prev) => ({ ...prev, loading: false }));
+        setState((prev) => ({ ...prev, error: error.message, loading: false }));
       });
   }, [limit, offset, repository]);
 
@@ -84,8 +88,15 @@ export function useLoadPokemons(
       error: state.error,
       isNextPageLoading: state.isNextPageLoading,
       pokemons: state.pokemons,
+      endOfItems: state.endOfItems,
     }),
-    [state.loading, state.error, state.isNextPageLoading, state.pokemons]
+    [
+      state.loading,
+      state.error,
+      state.isNextPageLoading,
+      state.pokemons,
+      state.endOfItems,
+    ]
   );
 
   return {

@@ -16,4 +16,4 @@ const styles = {
     flex: 1,
     backgroundColor: "#FFFFFF",
   },
-}
+};
