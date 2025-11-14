@@ -1,3 +1,4 @@
+import { AppFonts } from "@/shared/ui/fonts";
 import {
   Image,
   ImageSourcePropType,
@@ -30,12 +31,14 @@ export function Badge({ image, label, backgroundColor, style }: BadgeProps) {
         style,
       ]}
     >
-      <Image
-        source={image}
-        style={{ width: 16, height: 16, tintColor: "white" }}
-      />
+      <Image source={image} style={{ width: 16, height: 16, tintColor: "white" }} />
       <Text
-        style={{ color: "white", marginLeft: 6, fontSize: 12, fontWeight: 500 }}
+        style={{
+          color: "white",
+          marginLeft: 6,
+          fontSize: 12,
+          fontFamily: AppFonts.medium,
+        }}
       >
         {label}
       </Text>

@@ -1,6 +1,7 @@
 import { TextColors } from "@/constants/theme";
 import { View, Text, ImageSourcePropType, ViewStyle, StyleProp } from "react-native";
 import { Badge } from "./badge";
+import { AppFonts } from "@/shared/ui/fonts";
 
 export interface PokemonInfoProps {
   id: string;
@@ -18,17 +19,22 @@ export default function PokemonInfo({ id, name, types, style }: PokemonInfoProps
     <View style={style}>
       <Text
         style={{
-          fontSize: 12,
-          fontWeight: 700,
-          color: TextColors.number,
+          fontSize: 16,
+          fontFamily: AppFonts.bold,
+          lineHeight: 16,
+          includeFontPadding: false,
+          color: '#17171ba0',
         }}
       >
         {id}
       </Text>
       <Text
         style={{
-          fontSize: 26,
-          fontWeight: 700,
+          fontSize: 32,
+          includeFontPadding: true,
+          marginTop: -10,
+          marginBottom: -10,
+          fontFamily: AppFonts.bold,
           color: TextColors.white,
         }}
       >

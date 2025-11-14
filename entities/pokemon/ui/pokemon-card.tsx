@@ -10,6 +10,7 @@ import {
   ViewStyle,
 } from "react-native";
 import { Pokemon } from "../model/pokemon";
+import { AppFonts } from "@/shared/ui/fonts";
 
 interface PokemonCardProps {
   pokemon: Pokemon;
@@ -39,16 +40,19 @@ export function PokemonCard({ pokemon, onTap, style }: PokemonCardProps) {
             <Text
               style={{
                 fontSize: 12,
-                fontWeight: 700,
+                fontFamily: AppFonts.bold,
                 color: TextColors.number,
               }}
             >
-              {pokemon.id}
+              {`#${pokemon.id}`}
             </Text>
             <Text
               style={{
                 fontSize: 26,
-                fontWeight: 700,
+                includeFontPadding: true,
+                marginTop: -8,
+                marginBottom: -8,
+                fontFamily: AppFonts.bold,
                 color: TextColors.white,
               }}
             >
