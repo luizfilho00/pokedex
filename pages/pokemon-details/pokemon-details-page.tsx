@@ -4,68 +4,17 @@ import { TextColors } from "@/constants/theme";
 import useFetchPokemonById from "@/features/fetch-pokemon-by-id/use-fetch-pokemon-by-id";
 import { AppFonts } from "@/shared/ui/fonts";
 import { useLocalSearchParams } from "expo-router";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Image, ImageBackground, Text, useWindowDimensions, View } from "react-native";
 import { SceneMap, TabBar, TabBarItem, TabView } from "react-native-tab-view";
-
-const renderScene = SceneMap({
-  first: FirstPage,
-  second: SecondPage,
-  third: ThirdPage,
-});
-
-function FirstPage() {
-  return (
-    <View
-      style={{
-        backgroundColor: "white",
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30,
-        padding: 16,
-        flex: 1,
-      }}
-    >
-      <Text>First Page</Text>
-    </View>
-  );
-}
-
-function SecondPage() {
-  return (
-    <View
-      style={{
-        backgroundColor: "white",
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30,
-        padding: 16,
-        flex: 1,
-      }}
-    >
-      <Text>Second Page</Text>
-    </View>
-  );
-}
-
-function ThirdPage() {
-  return (
-    <View
-      style={{
-        backgroundColor: "white",
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30,
-        padding: 16,
-        flex: 1,
-      }}
-    >
-      <Text>Third Page</Text>
-    </View>
-  );
-}
+import AboutPage from "./about-page";
+import StatsPage from "./stats-page";
+import EvolutionPage from "./evolution-page";
 
 const routes = [
-  { key: "first", title: "About" },
-  { key: "second", title: "Stats" },
-  { key: "third", title: "Evolution" },
+  { key: "about", title: "About" },
+  { key: "stats", title: "Stats" },
+  { key: "evolution", title: "Evolution" },
 ];
 
 const renderTabItem = (props: any) => {
@@ -125,6 +74,19 @@ export default function PokemonDetailsPage() {
   const layout = useWindowDimensions();
   const [index, setIndex] = useState(0);
 
+  const renderScene = useCallback(({ route }: any) => {
+    switch (route.key) {
+      case "about":
+        return <AboutPage pokemon={pokemon!} />;
+      case "stats":
+        return <StatsPage pokemon={pokemon!} />;
+      case "evolution":
+        return <EvolutionPage pokemon={pokemon!} />;
+      default:
+        return null;
+    }
+  }, [pokemon]);
+  
   return (
     pokemon && (
       <View

@@ -10,7 +10,7 @@ import {
 
 interface BadgeProps {
   image: ImageSourcePropType;
-  label: string;
+  label?: string;
   backgroundColor: string;
   style?: StyleProp<ViewStyle>;
 }
@@ -23,7 +23,7 @@ export function Badge({ image, label, backgroundColor, style }: BadgeProps) {
           width: "auto",
           alignSelf: "flex-start",
           backgroundColor: backgroundColor,
-          borderRadius: 8,
+          borderRadius: 6,
           flexDirection: "row",
           alignItems: "center",
           padding: 6,
@@ -32,16 +32,18 @@ export function Badge({ image, label, backgroundColor, style }: BadgeProps) {
       ]}
     >
       <Image source={image} style={{ width: 16, height: 16, tintColor: "white" }} />
-      <Text
-        style={{
-          color: "white",
-          marginLeft: 6,
-          fontSize: 12,
-          fontFamily: AppFonts.medium,
-        }}
-      >
-        {label}
-      </Text>
+      {label && (
+        <Text
+          style={{
+            color: "white",
+            marginLeft: 6,
+            fontSize: 12,
+            fontFamily: AppFonts.medium,
+          }}
+        >
+          {label}
+        </Text>
+      )}
     </View>
   );
 }

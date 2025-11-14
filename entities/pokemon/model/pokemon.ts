@@ -1,3 +1,4 @@
+import { PokemonStats } from "./pokemon-stats";
 import { PokemonType } from "./pokemon-type";
 
 export interface Pokemon {
@@ -5,4 +6,5 @@ export interface Pokemon {
   name: string;
   types: PokemonType[];
   image: string;
+  stats: PokemonStats[];
 }

@@ -1,5 +1,6 @@
 export { fetchPokemons } from "./api/pokemon-api";
 export { Pokemon } from "./model/pokemon";
+export { PokemonStats, PokemonStatsObject } from "./model/pokemon-stats";
 export {
   BugType,
   DarkType,
