@@ -1,6 +1,8 @@
+import { OutlinedText } from "@/components/ui/outlined_text";
 import PokemonInfo from "@/components/ui/pokemon-info";
-import { Colors, TextColors } from "@/constants/theme";
+import { TextColors } from "@/constants/theme";
 import useFetchPokemonById from "@/features/fetch-pokemon-by-id/use-fetch-pokemon-by-id";
+import { AppFonts } from "@/shared/ui/fonts";
 import { useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { Image, ImageBackground, Text, useWindowDimensions, View } from "react-native";
@@ -30,7 +32,15 @@ function FirstPage() {
 
 function SecondPage() {
   return (
-    <View>
+    <View
+      style={{
+        backgroundColor: "white",
+        borderTopLeftRadius: 30,
+        borderTopRightRadius: 30,
+        padding: 16,
+        flex: 1,
+      }}
+    >
       <Text>Second Page</Text>
     </View>
   );
@@ -38,7 +48,15 @@ function SecondPage() {
 
 function ThirdPage() {
   return (
-    <View>
+    <View
+      style={{
+        backgroundColor: "white",
+        borderTopLeftRadius: 30,
+        borderTopRightRadius: 30,
+        padding: 16,
+        flex: 1,
+      }}
+    >
       <Text>Third Page</Text>
     </View>
   );
@@ -51,11 +69,12 @@ const routes = [
 ];
 
 const renderTabItem = (props: any) => {
-  const { key, ...tabBarItemProps } = props; 
+  const { key, ...tabBarItemProps } = props;
   const routeIndex = props.navigationState.routes.findIndex(
     (r: any) => r.key === props.route.key
   );
   const isSelected = props.navigationState.index === routeIndex;
+
   return isSelected ? (
     <ImageBackground
       source={require("@/assets/images/mask_pokeball.png")}
@@ -65,23 +84,33 @@ const renderTabItem = (props: any) => {
     >
       <TabBarItem
         {...tabBarItemProps}
-        labelStyle={{ color: TextColors.white, fontSize: 16, fontWeight: 700 }}
+        labelStyle={{
+          color: TextColors.white,
+          fontSize: 16,
+          fontFamily: AppFonts.bold,
+          opacity: 1, // Full opacity for selected
+        }}
       />
     </ImageBackground>
   ) : (
     <TabBarItem
       {...tabBarItemProps}
-      labelStyle={{ color: TextColors.white, fontSize: 16, fontWeight: 700 }}
+      labelStyle={{
+        color: TextColors.white,
+        fontSize: 16,
+        fontFamily: AppFonts.bold,
+        opacity: 0.5, // Reduced opacity for non-selected
+      }}
     />
   );
 };
 
 const renderTabBar = (props: any) => {
-  const { key, ...tabBarProps } = props; 
+  const { key, ...tabBarProps } = props;
   return (
     <TabBar
       {...tabBarProps}
-      indicatorStyle={{ backgroundColor: Colors.light.primary }}
+      indicatorStyle={{ backgroundColor: "transparent" }}
       renderTabBarItem={renderTabItem}
       style={{
         backgroundColor: "transparent",
@@ -101,33 +130,45 @@ export default function PokemonDetailsPage() {
       <View
         style={{
           backgroundColor: pokemon?.types[0].backgroundColor,
-          paddingTop: 96,
+          paddingTop: 50,
           flex: 1,
         }}
       >
-        {/* FrameLayout equivalent - relative positioning container */}
-        <View style={{ position: "relative", height: 140 }}>
-          {/* Background pattern - positioned at the end */}
+        <View style={{ position: "relative", height: 240 }}>
+          <View
+            style={{
+              position: "absolute",
+              top: 0,
+              right: 0,
+              left: 0,
+            }}
+          >
+            <OutlinedText
+              text={pokemon.name.toUpperCase()}
+              fontSize={100}
+              strokeColor="white"
+              strokeWidth={2}
+              fontFamily={AppFonts.bold}
+            />
+          </View>
           <ImageBackground
-            source={require("@/assets/images/card_pattern.png")}
+            source={require("@/assets/images/horizontal_pattern.png")}
             style={{
               position: "absolute",
               right: 0,
-              top: "50%",
-              width: 200,
-              height: 200,
-              transform: [{ translateY: -100 }],
+              top: "55%",
+              width: 65,
+              height: 140,
             }}
             imageStyle={{
               resizeMode: "contain",
             }}
           />
-
-          {/* Content - centered */}
           <View
             style={{
+              marginTop: 16,
+              marginStart: 40,
               flexDirection: "row",
-              justifyContent: "center",
               alignItems: "center",
               height: "100%",
             }}
@@ -148,11 +189,7 @@ export default function PokemonDetailsPage() {
             />
           </View>
         </View>
-
         <TabView
-          style={{
-            marginTop: 48,
-          }}
           renderTabBar={renderTabBar}
           navigationState={{ index, routes }}
           renderScene={renderScene}
