@@ -1,13 +1,14 @@
 import { Pokemon } from "@/entities/pokemon";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { loadPokemonsRepository } from "../api/load-pokemons-repository";
-import { ILoadPokemonsRepository } from "../api/load-pokemons-repository.interface";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { loadPokemonsRepository } from "../../../shared/api/load-pokemons-repository";
+import { ILoadPokemonsRepository } from "../../../shared/api/load-pokemons-repository.interface";
 
 interface LoadPokemonsState {
   loading: boolean;
   isNextPageLoading: boolean;
   error: string | null;
   pokemons: Pokemon[] | null;
+  endOfItems: boolean;
 }
 
 interface LoadPokemonsAction {
@@ -37,26 +38,36 @@ export function useLoadPokemons(
     isNextPageLoading: false,
     error: null,
     pokemons: null,
+    endOfItems: false,
   });
   const currentOffset = useRef(offset);
 
   const fetchNextPage = useCallback(() => {
-    console.log("fetchNextPage - before return");
-    if (state.isNextPageLoading) return;
-    console.log("fetchNextPage - triggered api - offset", currentOffset.current);
-    setState((prev) => ({ ...prev, isNextPageLoading: true }));
-    currentOffset.current = currentOffset.current + limit;
-    repository
-      .loadPokemons(limit, currentOffset.current)
-      .then((pokemons) =>
-        setState((prev) => ({
-          ...prev,
-          pokemons: [...(prev.pokemons ?? []), ...pokemons],
-        }))
-      )
-      .catch((error) => setState((prev) => ({ ...prev, error: error.message })))
-      .finally(() => setState((prev) => ({ ...prev, isNextPageLoading: false })));
-  }, [state.isNextPageLoading, limit, currentOffset, repository]);
+    setState((prev) => {
+      if (prev.isNextPageLoading) return prev;
+      currentOffset.current = currentOffset.current + limit;
+      repository
+        .loadPokemons(limit, currentOffset.current)
+        .then((pokemons) =>
+          setState((state) => ({
+            ...state,
+            pokemons: [...(state.pokemons ?? []), ...pokemons],
+            endOfItems: pokemons.length < limit,
+            isNextPageLoading: false,
+          }))
+        )
+        .catch((error) =>
+          setState((state) => ({
+            ...state,
+            error: error.message,
+            isNextPageLoading: false,
+          }))
+        );
+      return { ...prev, isNextPageLoading: true };
+    });
+  }, [limit, repository]);
+
+  const actions = useMemo(() => ({ fetchNextPage }), [fetchNextPage]);
 
   useEffect(() => {
     setState((prev) => ({ ...prev, loading: true }));
@@ -64,25 +75,32 @@ export function useLoadPokemons(
       .loadPokemons(limit, offset)
       .then((data) => {
         currentOffset.current = offset;
-        setState((prev) => ({ ...prev, pokemons: data, error: null }));
+        setState((prev) => ({ ...prev, pokemons: data, error: null, loading: false }));
       })
       .catch((error) => {
-        setState((prev) => ({ ...prev, error: error.message }));
-      })
-      .finally(() => {
-        setState((prev) => ({ ...prev, loading: false }));
+        setState((prev) => ({ ...prev, error: error.message, loading: false }));
       });
   }, [limit, offset, repository]);
 
-  return {
-    state: {
+  const memoizedState = useMemo(
+    () => ({
       loading: state.loading,
       error: state.error,
       isNextPageLoading: state.isNextPageLoading,
       pokemons: state.pokemons,
-    },
-    actions: {
-      fetchNextPage: fetchNextPage,
-    },
+      endOfItems: state.endOfItems,
+    }),
+    [
+      state.loading,
+      state.error,
+      state.isNextPageLoading,
+      state.pokemons,
+      state.endOfItems,
+    ]
+  );
+
+  return {
+    state: memoizedState,
+    actions,
   } as LoadPokemonsResult;
 }

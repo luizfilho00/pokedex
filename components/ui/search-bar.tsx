@@ -1,7 +1,16 @@
 import { TextColors } from "@/constants/theme";
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { Image, Pressable, StyleProp, StyleSheet, TextInput, View, ViewStyle } from "react-native";
+import {
+  Image,
+  Keyboard,
+  Pressable,
+  StyleProp,
+  StyleSheet,
+  TextInput,
+  View,
+  ViewStyle,
+} from "react-native";
 
 interface SearchBarProps {
   onSearch: (text: string) => void;
@@ -16,6 +25,7 @@ export function SearchBar({
 }: SearchBarProps) {
   const [search, setSearch] = useState("");
   const handleClear = () => {
+    Keyboard.dismiss();
     setSearch("");
     onSearch("");
   };
@@ -25,10 +35,7 @@ export function SearchBar({
   };
   return (
     <View style={[styles.container, style]}>
-      <Image
-        source={require("@/assets/images/search.png")}
-        style={styles.icon}
-      />
+      <Image source={require("@/assets/images/search.png")} style={styles.icon} />
       <TextInput
         style={styles.input}
         placeholder={placeholder}

@@ -1,6 +1,6 @@
 import { Pokemon } from "@/entities/pokemon";
 import { renderHook, waitFor } from "@testing-library/react-native";
-import { ILoadPokemonsRepository } from "../../api/load-pokemons-repository.interface";
+import { ILoadPokemonsRepository } from "../../../../shared/api/load-pokemons-repository.interface";
 import { useLoadPokemons } from "../use-load-pokemons";
 
 /**

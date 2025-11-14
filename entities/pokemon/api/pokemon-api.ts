@@ -6,10 +6,22 @@ import {
 } from "./pokemon-api-response";
 import { mapPokemonResponse } from "./pokemon-mapper";
 
+export async function fetchPokemon(id: string): Promise<Pokemon> {
+  try {
+    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+    const pokemonResponseModel = await response.json();
+    return mapPokemonResponse(pokemonResponseModel);
+  } catch (error) {
+    console.error("Error fetching Pokémon", error);
+    throw error;
+  }
+}
+
 export async function fetchPokemons(limit: number, offset: number): Promise<Pokemon[]> {
   try {
-    //TODO -> Simulate network delay (remove in production)
-    await new Promise((resolve) => setTimeout(resolve, 2000));
     const response = await fetch(
       `https://pokeapi.co/api/v2/pokemon?limit=${limit}&offset=${offset}`
     );
