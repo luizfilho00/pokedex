@@ -1,5 +1,4 @@
 import { Pokemon } from "@/entities/pokemon";
-import { filterPokemonsByName } from "@/features/filter-pokemons";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 interface PokemonSearchState {
@@ -21,7 +20,12 @@ interface SearchTermTimeout {
   name: string;
 }
 
-export function usePokemonSearch(pokemons: Pokemon[] | null) {
+function filterPokemonsByName(pokemons: Pokemon[], name: string): Pokemon[] {
+  if (name.length === 0) return pokemons;
+  return pokemons.filter((pokemon) => pokemon.name.toLowerCase().includes(name.toLowerCase()));
+}
+
+export function useFilterPokemonList(pokemons: Pokemon[] | null) {
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const timerRef = useRef<SearchTermTimeout | null>(null);
 

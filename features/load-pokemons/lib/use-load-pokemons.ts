@@ -1,7 +1,7 @@
 import { Pokemon } from "@/entities/pokemon";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { loadPokemonsRepository } from "../api/load-pokemons-repository";
-import { ILoadPokemonsRepository } from "../api/load-pokemons-repository.interface";
+import { loadPokemonsRepository } from "../../../shared/api/load-pokemons-repository";
+import { ILoadPokemonsRepository } from "../../../shared/api/load-pokemons-repository.interface";
 
 interface LoadPokemonsState {
   loading: boolean;

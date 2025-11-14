@@ -14,6 +14,13 @@ export interface ILoadPokemonsRepository {
   loadPokemons(limit: number, offset: number): Promise<Pokemon[]>;
 
   /**
+   * Fetches a Pokemon by its ID.
+   * @param id - The ID of the Pokemon to fetch
+   * @returns Promise resolving to the Pokemon
+   */
+  fetchPokemonById(id: string): Promise<Pokemon>;
+
+  /**
    * Clears all cached Pokemon data.
    */
   clearCache(): void;

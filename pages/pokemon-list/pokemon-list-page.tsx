@@ -1,7 +1,7 @@
 import { LightColors } from "@/constants/theme";
 import { PokemonCard } from "@/entities/pokemon";
 import { useLoadPokemons } from "@/features/load-pokemons";
-import { usePokemonSearch } from "@/features/search-pokemons";
+import { useFilterPokemonList } from "@/features/filter-pokemon-list";
 import { ActivityIndicator, View } from "react-native";
 import Animated, {
   useAnimatedScrollHandler,
@@ -12,10 +12,11 @@ import { PokemonListHeader } from "./components/pokemon-list-header";
 import { PokemonListState } from "./components/pokemon-list-state";
 import { usePokemonListScroll } from "./hooks/use-pokemon-list-scroll";
 import { styles } from "./style";
+import { router } from "expo-router";
 
 export default function PokemonListPage() {
   const { state: loadPokemonsState, actions: loadPokemonsActions } = useLoadPokemons();
-  const { state: searchState, actions: searchActions } = usePokemonSearch(
+  const { state: searchState, actions: searchActions } = useFilterPokemonList(
     loadPokemonsState.pokemons
   );
   const { refList, setOffsetY } = usePokemonListScroll(
@@ -63,6 +64,10 @@ export default function PokemonListPage() {
           data={displayPokemons}
           renderItem={({ item }) => (
             <PokemonCard
+              onTap={(id) => router.push({
+                pathname: '/pokemon/details',
+                params: { id },
+              })}
               pokemon={item}
               style={{
                 marginVertical: 4,
