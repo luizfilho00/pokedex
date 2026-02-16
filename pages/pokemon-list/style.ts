@@ -29,12 +29,10 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     alignSelf: "flex-end",
     paddingHorizontal: 16,
-    paddingTop: 48,
     gap: 8,
   },
   searchBar: {
-    marginTop: 24,
-    // marginBottom: 20,
+    marginVertical: 8,
     marginHorizontal: 16,
   },
   list: {

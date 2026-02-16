@@ -1,5 +1,5 @@
 import { Pokemon } from "../model/pokemon";
-import { mapPokemonStats, mapPokemonStatsToObject } from "../model/pokemon-stats";
+import { mapPokemonStats } from "../model/pokemon-stats";
 import {
   BugType,
   DarkType,

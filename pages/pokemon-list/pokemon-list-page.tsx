@@ -1,12 +1,22 @@
 import { LightColors } from "@/constants/theme";
-import { PokemonCard } from "@/entities/pokemon";
+import { PokemonCard, Pokemon } from "@/entities/pokemon";
 import { useLoadPokemons } from "@/features/load-pokemons";
 import { useFilterPokemonList } from "@/features/filter-pokemon-list";
-import { ActivityIndicator, View } from "react-native";
+import { SearchBar } from "@/components/ui/search-bar";
+import {
+  ActivityIndicator,
+  FlatList,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useCallback, useMemo, useRef } from "react";
 import Animated, {
-  useAnimatedScrollHandler,
+  SharedValue,
   useSharedValue,
-  runOnJS,
+  useAnimatedStyle,
+  withTiming,
 } from "react-native-reanimated";
 import { PokemonListHeader } from "./components/pokemon-list-header";
 import { PokemonListState } from "./components/pokemon-list-state";
@@ -14,68 +24,127 @@ import { usePokemonListScroll } from "./hooks/use-pokemon-list-scroll";
 import { styles } from "./style";
 import { router } from "expo-router";
 
+type ListItem = { type: "search" } | { type: "pokemon"; data: Pokemon };
+
+function StickySearchBar({
+  onSearch,
+  isSticky,
+  stickyPaddingTop,
+}: {
+  onSearch: (text: string) => void;
+  isSticky: SharedValue<boolean>;
+  stickyPaddingTop: number;
+}) {
+  const animatedStyle = useAnimatedStyle(() => ({
+    paddingTop: withTiming(isSticky.value ? stickyPaddingTop : 12, {
+      duration: 200,
+    }),
+  }));
+
+  return (
+    <Animated.View style={[{ backgroundColor: "white" }, animatedStyle]}>
+      <SearchBar
+        onSearch={onSearch}
+        placeholder="What Pokémon are you looking for?"
+        style={styles.searchBar}
+      />
+    </Animated.View>
+  );
+}
+
 export default function PokemonListPage() {
   const { state: loadPokemonsState, actions: loadPokemonsActions } = useLoadPokemons();
   const { state: searchState, actions: searchActions } = useFilterPokemonList(
-    loadPokemonsState.pokemons
+    loadPokemonsState.pokemons,
   );
   const { refList, setOffsetY } = usePokemonListScroll(
     loadPokemonsState.pokemons,
-    searchState.isSearching
+    searchState.isSearching,
   );
   const displayPokemons = searchState.isSearching
     ? searchState.pokemons
     : loadPokemonsState.pokemons;
   const showFooterLoading =
     loadPokemonsState.isNextPageLoading && !searchState.isSearching;
-  const headerProgress = useSharedValue(0);
-  const lastScrollY = useSharedValue(0);
 
-  const scrollHandler = useAnimatedScrollHandler({
-    onScroll: (event) => {
-      const currentY = event.contentOffset.y;
-      runOnJS(setOffsetY)(event.contentOffset.y);
-      const delta = currentY - lastScrollY.value;
-      if (delta > 0) {
-        // Scrolling down - collapse
-        headerProgress.value = Math.min(1000, headerProgress.value + delta);
-      } else if (delta < 0) {
-        // Scrolling up - expand
-        headerProgress.value = Math.max(0, headerProgress.value + delta);
+  const insets = useSafeAreaInsets();
+  const headerHeightRef = useRef(0);
+  const isSticky = useSharedValue(false);
+
+  const handleScroll = useCallback(
+    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      const offsetY = event.nativeEvent.contentOffset.y;
+      setOffsetY(offsetY);
+      const stuck = offsetY >= headerHeightRef.current;
+      if (isSticky.value !== stuck) {
+        isSticky.value = stuck;
       }
-      lastScrollY.value = currentY;
     },
-  });
+    [setOffsetY, isSticky],
+  );
+
+  const listData = useMemo<ListItem[]>(() => {
+    if (!displayPokemons) return [];
+    return [
+      { type: "search" as const },
+      ...displayPokemons.map((p) => ({ type: "pokemon" as const, data: p })),
+    ];
+  }, [displayPokemons]);
+
+  const renderItem = useCallback(
+    ({ item }: { item: ListItem }) => {
+      if (item.type === "search") {
+        return (
+          <StickySearchBar
+            onSearch={searchActions.onSearch}
+            isSticky={isSticky}
+            stickyPaddingTop={insets.top}
+          />
+        );
+      }
+      return (
+        <PokemonCard
+          onTap={(id) =>
+            router.push({
+              pathname: "/pokemon/details",
+              params: { id },
+            })
+          }
+          pokemon={item.data}
+          style={{
+            marginVertical: 4,
+            marginHorizontal: 16,
+          }}
+        />
+      );
+    },
+    [searchActions.onSearch, isSticky, insets.top],
+  );
+
+  const keyExtractor = useCallback((item: ListItem) => {
+    return item.type === "search" ? "search" : item.data.id;
+  }, []);
 
   return (
     <View style={styles.header}>
-      <PokemonListHeader
-        onSearch={searchActions.onSearch}
-        headerProgress={headerProgress}
-      />
       <PokemonListState
         loading={loadPokemonsState.loading}
         error={loadPokemonsState.error}
       />
       {displayPokemons && (
-        <Animated.FlatList
+        <FlatList
           ref={refList}
           style={styles.list}
-          data={displayPokemons}
-          renderItem={({ item }) => (
-            <PokemonCard
-              onTap={(id) => router.push({
-                pathname: '/pokemon/details',
-                params: { id },
-              })}
-              pokemon={item}
-              style={{
-                marginVertical: 4,
-                marginHorizontal: 16,
-              }}
-            />
-          )}
-          keyExtractor={(item) => item.id}
+          data={listData}
+          renderItem={renderItem}
+          keyExtractor={keyExtractor}
+          onScroll={handleScroll}
+          ListHeaderComponent={
+            <View onLayout={(e) => { headerHeightRef.current = e.nativeEvent.layout.height; }}>
+              <PokemonListHeader />
+            </View>
+          }
+          stickyHeaderIndices={[1]}
           showsVerticalScrollIndicator={false}
           onEndReached={
             searchState.isSearching || loadPokemonsState.endOfItems
@@ -84,7 +153,6 @@ export default function PokemonListPage() {
           }
           onEndReachedThreshold={0.2}
           scrollEventThrottle={16}
-          onScroll={scrollHandler}
           ListFooterComponent={
             showFooterLoading ? (
               <ActivityIndicator
