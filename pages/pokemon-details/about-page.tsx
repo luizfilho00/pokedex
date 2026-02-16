@@ -80,21 +80,14 @@ export default function AboutPage({ pokemon }: { pokemon: Pokemon }) {
               gap: 8,
             }}
           >
-            <Badge
-              image={pokemon!.types[1].icon}
+            {pokemon.types.map((type) => (
+              <Badge
+              key={`${pokemon.id}-${type.name}`}
+              image={type.icon}
               label={""}
-              backgroundColor={pokemon!.types[1].foregroundColor}
+              backgroundColor={type.foregroundColor}
             />
-            <Badge
-              image={pokemon!.types[0].icon}
-              label={""}
-              backgroundColor={pokemon!.types[0].foregroundColor}
-            />
-            <Badge
-              image={pokemon!.types[1].icon}
-              label={""}
-              backgroundColor={pokemon!.types[1].foregroundColor}
-            />
+            ))}
           </View>
         </View>
 
