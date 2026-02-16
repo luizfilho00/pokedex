@@ -86,7 +86,7 @@ export default function PokemonDetailsPage() {
         return null;
     }
   }, [pokemon]);
-  
+
   return (
     pokemon && (
       <View
@@ -145,9 +145,6 @@ export default function PokemonDetailsPage() {
               id={`#${pokemon.id}`}
               name={pokemon.name}
               types={pokemon.types}
-              style={{
-                alignSelf: "center",
-              }}
             />
           </View>
         </View>

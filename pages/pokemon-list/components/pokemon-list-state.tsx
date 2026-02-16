@@ -2,7 +2,6 @@ import { LightColors } from "@/constants/theme";
 import { memo } from "react";
 import { ActivityIndicator, Text } from "react-native";
 import { useRenderCount } from "../hooks/use-render-count";
-import { styles } from "../style";
 
 interface PokemonListStateProps {
   loading: boolean;
@@ -19,12 +18,12 @@ export const PokemonListState = memo(function PokemonListState({
       <ActivityIndicator
         color={LightColors.primary}
         size="large"
-        style={styles.progress}
+        className="flex-1 self-center"
       />
     );
   }
   if (error) {
-    return <Text style={styles.error}>Error: {error}</Text>;
+    return <Text className="flex-1 self-center">Error: {error}</Text>;
   }
   return null;
 });

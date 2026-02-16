@@ -1,49 +1,31 @@
-import { AppFonts } from "@/shared/ui/fonts";
 import {
   Image,
   ImageSourcePropType,
-  StyleProp,
   Text,
   View,
-  ViewStyle,
 } from "react-native";
 
 interface BadgeProps {
   image: ImageSourcePropType;
   label?: string;
   backgroundColor: string;
-  style?: StyleProp<ViewStyle>;
+  className?: string;
 }
 
-export function Badge({ image, label, backgroundColor, style }: BadgeProps) {
+export function Badge({ image, label, backgroundColor, className }: BadgeProps) {
   return (
     <View
-      style={[
-        {
-          width: "auto",
-          alignSelf: "flex-start",
-          backgroundColor: backgroundColor,
-          borderRadius: 6,
-          flexDirection: "row",
-          alignItems: "center",
-          padding: 6,
-        },
-        style,
-      ]}
+      className={`self-start rounded-lg flex-row items-center p-1.5 ${className ?? ""}`}
+      style={{ backgroundColor }}
     >
-      <Image source={image} style={{ width: 16, height: 16, tintColor: "white" }} />
-      {label && (
-        <Text
-          style={{
-            color: "white",
-            marginLeft: 6,
-            fontSize: 12,
-            fontFamily: AppFonts.medium,
-          }}
-        >
-          {label}
-        </Text>
-      )}
+      <Image
+        source={image}
+        className="w-4 h-4"
+        style={{ tintColor: "white" }}
+      />
+      <Text className="text-white ml-1.5 text-xs font-medium">
+        {label}
+      </Text>
     </View>
   );
 }

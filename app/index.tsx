@@ -4,16 +4,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
   return (
-    <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
+    <SafeAreaView className="flex-1 bg-white" edges={["bottom"]}>
       <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
       <PokemonListPage />
     </SafeAreaView>
   );
 }
-
-const styles = {
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-  },
-};

@@ -1,4 +1,4 @@
-import { Image, ImageSourcePropType, Pressable, StyleSheet } from "react-native";
+import { Image, ImageSourcePropType, Pressable } from "react-native";
 
 interface IconButtonProps {
   icon: ImageSourcePropType;
@@ -9,11 +9,8 @@ interface IconButtonProps {
 export function IconButton({ icon, onPress, size = 25 }: IconButtonProps) {
   return (
     <Pressable
-      style={({ pressed }) => [
-        styles.button,
-        pressed && styles.pressed,
-        { padding: size / 3 },
-      ]}
+      className="justify-center items-center active:opacity-50"
+      style={{ padding: size / 3 }}
       onPress={onPress}
     >
       <Image
@@ -23,13 +20,3 @@ export function IconButton({ icon, onPress, size = 25 }: IconButtonProps) {
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  button: {
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  pressed: {
-    opacity: 0.5,
-  },
-});

@@ -5,23 +5,20 @@ import {
   Image,
   Keyboard,
   Pressable,
-  StyleProp,
-  StyleSheet,
   TextInput,
   View,
-  ViewStyle,
 } from "react-native";
 
 interface SearchBarProps {
   onSearch: (text: string) => void;
   placeholder?: string;
-  style?: StyleProp<ViewStyle>;
+  className?: string;
 }
 
 export function SearchBar({
   onSearch,
   placeholder = "Search Pokémon",
-  style,
+  className,
 }: SearchBarProps) {
   const [search, setSearch] = useState("");
   const handleClear = () => {
@@ -34,50 +31,24 @@ export function SearchBar({
     onSearch(text);
   };
   return (
-    <View style={[styles.container, style]}>
-      <Image source={require("@/assets/images/search.png")} style={styles.icon} />
+    <View className={`flex-row items-center bg-white rounded-[10px] px-3 h-12 shadow-sm ${className ?? ""}`}>
+      <Image
+        source={require("@/assets/images/search.png")}
+        className="w-5 h-5"
+        style={{ tintColor: TextColors.grey }}
+      />
       <TextInput
-        style={styles.input}
+        className="flex-1 ml-3 text-base text-text-black"
         placeholder={placeholder}
         placeholderTextColor={TextColors.grey}
         onChangeText={handleChange}
         value={search}
       />
       {search.length > 0 && (
-        <Pressable onPress={handleClear} style={styles.clearButton}>
+        <Pressable onPress={handleClear} className="p-2">
           <Ionicons name="close" size={20} color={TextColors.grey} />
         </Pressable>
       )}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "white",
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    height: 48,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  icon: {
-    width: 20,
-    height: 20,
-    tintColor: TextColors.grey,
-  },
-  input: {
-    flex: 1,
-    marginLeft: 12,
-    fontSize: 16,
-    color: TextColors.black,
-  },
-  clearButton: {
-    padding: 8,
-  },
-});

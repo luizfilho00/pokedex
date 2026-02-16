@@ -3,11 +3,8 @@ import { TextColors } from "@/constants/theme";
 import {
   Image,
   Pressable,
-  StyleProp,
-  StyleSheet,
   Text,
   View,
-  ViewStyle,
 } from "react-native";
 import { Pokemon } from "../model/pokemon";
 import { AppFonts } from "@/shared/ui/fonts";
@@ -15,12 +12,12 @@ import { AppFonts } from "@/shared/ui/fonts";
 interface PokemonCardProps {
   pokemon: Pokemon;
   onTap: (pokemonId: string) => void;
-  style?: StyleProp<ViewStyle>;
+  className?: string;
 }
 
-export function PokemonCard({ pokemon, onTap, style }: PokemonCardProps) {
+export function PokemonCard({ pokemon, onTap, className }: PokemonCardProps) {
   return (
-    <View style={[styles.invisibleCardContainer, style]}>
+    <View className={`relative ${className ?? ""}`}>
       <Pressable
         onPress={() => onTap(pokemon.id)}
         style={({ pressed }) => ({
@@ -29,44 +26,20 @@ export function PokemonCard({ pokemon, onTap, style }: PokemonCardProps) {
         })}
       >
         <View
-          style={[
-            styles.cardContainer,
-            {
-              backgroundColor: pokemon.types[0].backgroundColor,
-            },
-          ]}
+          className="rounded-[10px] flex-row justify-between mt-6"
+          style={{ backgroundColor: pokemon.types[0].backgroundColor }}
         >
-          <View style={{ padding: 20 }}>
+          <View className="p-5">
             <Text
-              style={{
-                fontSize: 12,
-                fontFamily: AppFonts.bold,
-                color: TextColors.number,
-              }}
+              style={{ color: TextColors.number }}
+              className="text-xs font-bold"
             >
-              {`#${pokemon.id}`}
+              {pokemon.id}
             </Text>
-            <Text
-              style={{
-                fontSize: 26,
-                includeFontPadding: true,
-                marginTop: -8,
-                marginBottom: -8,
-                fontFamily: AppFonts.bold,
-                color: TextColors.white,
-              }}
-            >
+            <Text className="text-[26px] font-bold text-white">
               {pokemon.name}
             </Text>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                alignSelf: "flex-start",
-                marginTop: 6,
-                gap: 6,
-              }}
-            >
+            <View className="flex-row items-center self-start mt-1.5 gap-1.5">
               {pokemon.types.map((type, _) => (
                 <Badge
                   key={`${pokemon.id}-${type.name}`}
@@ -81,34 +54,13 @@ export function PokemonCard({ pokemon, onTap, style }: PokemonCardProps) {
         </View>
         <Image
           source={require("@/assets/images/card_pattern.png")}
-          style={{
-            position: "absolute",
-            left: 90,
-            top: 30,
-          }}
+          className="absolute left-[90px] top-[30px]"
         />
         <Image
           source={{ uri: pokemon.image }}
-          style={{
-            width: 130,
-            height: 130,
-            position: "absolute",
-            right: 10,
-          }}
+          className="w-[130px] h-[130px] absolute right-[10px]"
         />
       </Pressable>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  invisibleCardContainer: {
-    position: "relative",
-  },
-  cardContainer: {
-    borderRadius: 10,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 24,
-  },
-});
