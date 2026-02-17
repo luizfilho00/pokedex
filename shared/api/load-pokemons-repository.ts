@@ -26,12 +26,6 @@ class LoadPokemonsRepositoryImpl implements ILoadPokemonsRepository {
   }
 
   async fetchPokemonById(id: string): Promise<Pokemon> {
-    for (const [, pokemons] of this.cache.entries()) {
-      const found = pokemons.find((p) => p.id === id);
-      if (found) {
-        return found;
-      }
-    }
     return fetchPokemon(id);
   }
 }

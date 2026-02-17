@@ -44,5 +44,7 @@ export default function useFetchPokemonById(
   
   return {
     pokemon: state.pokemon,
+    loading: state.loading,
+    error: state.error,
   };
 }

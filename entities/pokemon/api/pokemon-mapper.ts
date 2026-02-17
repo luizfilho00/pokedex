@@ -34,6 +34,8 @@ export function mapPokemonResponse(pokemonApiResponse: PokemonApiResponse): Poke
       pokemonApiResponse.id
     ).padStart(3, "0")}.png`,
     stats: mapPokemonStats(pokemonApiResponse.stats),
+    height: pokemonApiResponse.height,
+    weight: pokemonApiResponse.weight,
   };
 }
 

@@ -1,5 +1,5 @@
 export { fetchPokemons } from "./api/pokemon-api";
-export { Pokemon } from "./model/pokemon";
+export { Pokemon, EvolutionStage } from "./model/pokemon";
 export { PokemonStats, PokemonStatsObject } from "./model/pokemon-stats";
 export {
   BugType,
@@ -21,4 +21,5 @@ export {
   WaterType
 } from "./model/pokemon-type";
 export { PokemonCard } from "./ui/pokemon-card";
+export { ALL_TYPES, getTypeDefenses } from "./model/type-effectiveness";
 
