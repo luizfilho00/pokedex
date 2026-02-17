@@ -1,4 +1,3 @@
-import { TextColors } from "@/constants/theme";
 import { Pokemon } from "@/entities/pokemon";
 import { EvolutionStage } from "@/entities/pokemon/model/pokemon";
 import { AppFonts } from "@/shared/ui/fonts";
@@ -24,25 +23,14 @@ function EvolutionPair({
         : "";
 
   return (
-    <View
-      style={{
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        marginBottom: 24,
-      }}
-    >
+    <View className="flex-row items-center justify-between mb-6">
       <PokemonStageView stage={from} />
-      <View style={{ alignItems: "center", flex: 1 }}>
-        <Text style={{ fontSize: 20, color: TextColors.grey }}>→</Text>
+      <View className="items-center flex-1">
+        <Text className="text-xl text-text-grey">→</Text>
         {triggerLabel ? (
           <Text
-            style={{
-              fontSize: 12,
-              fontFamily: AppFonts.medium,
-              color: typeColor,
-              marginTop: 4,
-            }}
+            className="text-xs mt-1"
+            style={{ fontFamily: AppFonts.medium, color: typeColor }}
           >
             ({triggerLabel})
           </Text>
@@ -55,40 +43,23 @@ function EvolutionPair({
 
 function PokemonStageView({ stage }: { stage: EvolutionStage }) {
   return (
-    <View style={{ alignItems: "center", width: 120 }}>
-      <View
-        style={{
-          width: 80,
-          height: 80,
-          borderRadius: 40,
-          backgroundColor: "#F5F5F5",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
+    <View className="items-center w-[120px]">
+      <View className="w-20 h-20 rounded-full bg-grey-light items-center justify-center">
         <Image
           source={{ uri: stage.image }}
-          style={{ width: 64, height: 64 }}
+          className="w-16 h-16"
           resizeMode="contain"
         />
       </View>
       <Text
-        style={{
-          fontSize: 12,
-          fontFamily: AppFonts.regular,
-          color: TextColors.grey,
-          marginTop: 8,
-        }}
+        className="text-xs text-text-grey mt-2"
+        style={{ fontFamily: AppFonts.regular }}
       >
         #{stage.id}
       </Text>
       <Text
-        style={{
-          fontSize: 14,
-          fontFamily: AppFonts.bold,
-          color: TextColors.black,
-          marginTop: 2,
-        }}
+        className="text-sm text-text-black mt-0.5"
+        style={{ fontFamily: AppFonts.bold }}
       >
         {stage.name}
       </Text>
@@ -102,34 +73,20 @@ export default function EvolutionPage({ pokemon }: { pokemon: Pokemon }) {
 
   return (
     <ScrollView
-      style={{
-        backgroundColor: "white",
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30,
-        flex: 1,
-      }}
+      className="bg-white rounded-t-[30px] flex-1"
       contentContainerStyle={{ padding: 32 }}
     >
       <Text
-        style={{
-          fontSize: 16,
-          fontFamily: AppFonts.bold,
-          color: typeColor,
-          marginBottom: 24,
-        }}
+        className="text-base mb-6"
+        style={{ fontFamily: AppFonts.bold, color: typeColor }}
       >
         Evolution Chart
       </Text>
 
       {chain.length <= 1 ? (
         <Text
-          style={{
-            fontSize: 14,
-            fontFamily: AppFonts.regular,
-            color: TextColors.grey,
-            textAlign: "center",
-            marginTop: 40,
-          }}
+          className="text-sm text-text-grey text-center mt-10"
+          style={{ fontFamily: AppFonts.regular }}
         >
           No evolutions
         </Text>

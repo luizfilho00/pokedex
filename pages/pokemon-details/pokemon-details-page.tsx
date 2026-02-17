@@ -28,9 +28,7 @@ const renderTabItem = (props: any) => {
   return isSelected ? (
     <ImageBackground
       source={require("@/assets/images/mask_pokeball.png")}
-      imageStyle={{
-        resizeMode: "center",
-      }}
+      imageStyle={{ resizeMode: "center" }}
     >
       <TabBarItem
         {...tabBarItemProps}
@@ -62,9 +60,7 @@ const renderTabBar = (props: any) => {
       {...tabBarProps}
       indicatorStyle={{ backgroundColor: "transparent" }}
       renderTabBarItem={renderTabItem}
-      style={{
-        backgroundColor: "transparent",
-      }}
+      style={{ backgroundColor: "transparent" }}
     />
   );
 };
@@ -93,29 +89,22 @@ export default function PokemonDetailsPage() {
   );
 
   return (
-    <View style={{ flex: 1, backgroundColor: "white", paddingBottom: insets.bottom }}>
+    <View className="flex-1 bg-white" style={{ paddingBottom: insets.bottom }}>
       {loading && (
-        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <View className="flex-1 justify-center items-center">
           <ActivityIndicator size="large" color={LightColors.primary} />
         </View>
       )}
       {pokemon && (
         <View
+          className="flex-1"
           style={{
             backgroundColor: pokemon.types[0].backgroundColor,
             paddingTop: insets.top,
-            flex: 1,
           }}
         >
-          <View style={{ position: "relative", height: 240 }}>
-            <View
-              style={{
-                position: "absolute",
-                top: 0,
-                right: 0,
-                left: 0,
-              }}
-            >
+          <View className="relative h-[240px]">
+            <View className="absolute top-0 right-0 left-0">
               <OutlinedText
                 text={pokemon.name.toUpperCase()}
                 fontSize={100}
@@ -126,29 +115,14 @@ export default function PokemonDetailsPage() {
             </View>
             <ImageBackground
               source={require("@/assets/images/horizontal_pattern.png")}
-              style={{
-                position: "absolute",
-                right: 0,
-                top: "55%",
-                width: 65,
-                height: 140,
-              }}
-              imageStyle={{
-                resizeMode: "contain",
-              }}
+              className="absolute right-0 w-[65px] h-[140px]"
+              style={{ top: "55%" }}
+              imageStyle={{ resizeMode: "contain" }}
             />
-            <View
-              style={{
-                marginTop: 16,
-                marginStart: 40,
-                flexDirection: "row",
-                alignItems: "center",
-                height: "100%",
-              }}
-            >
+            <View className="mt-4 ml-10 flex-row items-center h-full">
               <ImageBackground
                 source={require("@/assets/images/circle.png")}
-                style={{ marginEnd: 24 }}
+                className="mr-6"
               >
                 <Image source={{ uri: pokemon.image }} width={125} height={125} />
               </ImageBackground>

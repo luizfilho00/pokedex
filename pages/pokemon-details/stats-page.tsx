@@ -1,4 +1,3 @@
-import { TextColors } from "@/constants/theme";
 import { Pokemon, getTypeDefenses } from "@/entities/pokemon";
 import { AppFonts } from "@/shared/ui/fonts";
 import { View, Text, Image, ScrollView } from "react-native";
@@ -36,26 +35,15 @@ export default function StatsPage({ pokemon }: { pokemon: Pokemon }) {
   const defenses = getTypeDefenses(pokemon.types);
 
   return (
-    <ScrollView
-      style={{
-        backgroundColor: "white",
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30,
-        padding: 32,
-        flex: 1,
-      }}
-    >
+    <ScrollView className="bg-white rounded-t-[30px] flex-1 p-8">
       <Text
-        style={{
-          fontSize: 16,
-          fontFamily: AppFonts.bold,
-          color: primaryColor,
-        }}
+        className="text-base"
+        style={{ fontFamily: AppFonts.bold, color: primaryColor }}
       >
         Base Stats
       </Text>
 
-      <View style={{ marginTop: 16 }}>
+      <View className="mt-4">
         {pokemon.stats.map((stat) => {
           const label = STAT_LABELS[stat.name] ?? stat.name;
           const isHp = stat.name === "Hp";
@@ -63,74 +51,37 @@ export default function StatsPage({ pokemon }: { pokemon: Pokemon }) {
           const ratio = stat.baseStat / 255;
 
           return (
-            <View
-              key={stat.name}
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginBottom: 12,
-              }}
-            >
+            <View key={stat.name} className="flex-row items-center mb-3">
               <Text
-                style={{
-                  width: 60,
-                  fontFamily: AppFonts.medium,
-                  color: TextColors.black,
-                  fontSize: 12,
-                }}
+                className="w-[60px] text-xs text-text-black"
+                style={{ fontFamily: AppFonts.medium }}
               >
                 {label}
               </Text>
               <Text
-                style={{
-                  width: 36,
-                  fontFamily: AppFonts.regular,
-                  color: TextColors.grey,
-                  fontSize: 14,
-                  textAlign: "right",
-                }}
+                className="w-9 text-sm text-text-grey text-right"
+                style={{ fontFamily: AppFonts.regular }}
               >
                 {stat.baseStat}
               </Text>
-              <View
-                style={{
-                  flex: 1,
-                  height: 4,
-                  backgroundColor: "#E0E0E0",
-                  borderRadius: 2,
-                  marginHorizontal: 12,
-                  overflow: "hidden",
-                }}
-              >
+              <View className="flex-1 h-1 bg-grey-medium rounded-sm mx-3 overflow-hidden">
                 <View
+                  className="h-full rounded-sm"
                   style={{
                     width: `${Math.round(ratio * 100)}%`,
-                    height: "100%",
                     backgroundColor: primaryColor,
-                    borderRadius: 2,
                   }}
                 />
               </View>
               <Text
-                style={{
-                  width: 32,
-                  fontFamily: AppFonts.regular,
-                  color: TextColors.grey,
-                  fontSize: 12,
-                  textAlign: "right",
-                }}
+                className="w-8 text-xs text-text-grey text-right"
+                style={{ fontFamily: AppFonts.regular }}
               >
                 {min}
               </Text>
               <Text
-                style={{
-                  width: 32,
-                  fontFamily: AppFonts.regular,
-                  color: TextColors.grey,
-                  fontSize: 12,
-                  textAlign: "right",
-                  marginLeft: 8,
-                }}
+                className="w-8 text-xs text-text-grey text-right ml-2"
+                style={{ fontFamily: AppFonts.regular }}
               >
                 {max}
               </Text>
@@ -138,58 +89,29 @@ export default function StatsPage({ pokemon }: { pokemon: Pokemon }) {
           );
         })}
 
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginTop: 4,
-            paddingTop: 12,
-            borderTopWidth: 1,
-            borderTopColor: "#E0E0E0",
-          }}
-        >
+        <View className="flex-row items-center mt-1 pt-3 border-t border-grey-medium">
           <Text
-            style={{
-              width: 60,
-              fontFamily: AppFonts.bold,
-              color: TextColors.black,
-              fontSize: 12,
-            }}
+            className="w-[60px] text-xs text-text-black"
+            style={{ fontFamily: AppFonts.bold }}
           >
             Total
           </Text>
           <Text
-            style={{
-              width: 36,
-              fontFamily: AppFonts.bold,
-              color: TextColors.black,
-              fontSize: 14,
-              textAlign: "right",
-            }}
+            className="w-9 text-sm text-text-black text-right"
+            style={{ fontFamily: AppFonts.bold }}
           >
             {total}
           </Text>
-          <View style={{ flex: 1, marginHorizontal: 12 }} />
+          <View className="flex-1 mx-3" />
           <Text
-            style={{
-              width: 32,
-              fontFamily: AppFonts.medium,
-              color: TextColors.grey,
-              fontSize: 12,
-              textAlign: "right",
-            }}
+            className="w-8 text-xs text-text-grey text-right"
+            style={{ fontFamily: AppFonts.medium }}
           >
             Min
           </Text>
           <Text
-            style={{
-              width: 32,
-              fontFamily: AppFonts.medium,
-              color: TextColors.grey,
-              fontSize: 12,
-              textAlign: "right",
-              marginLeft: 8,
-            }}
+            className="w-8 text-xs text-text-grey text-right ml-2"
+            style={{ fontFamily: AppFonts.medium }}
           >
             Max
           </Text>
@@ -197,12 +119,8 @@ export default function StatsPage({ pokemon }: { pokemon: Pokemon }) {
       </View>
 
       <Text
-        style={{
-          marginTop: 16,
-          fontFamily: AppFonts.regular,
-          color: TextColors.grey,
-          fontSize: 10,
-        }}
+        className="mt-4 text-[10px] text-text-grey"
+        style={{ fontFamily: AppFonts.regular }}
       >
         The ranges shown on the right are for a level 100 Pokémon. Minimum values are
         based on 0 EVs, 0 IVs and a hindering nature. Maximum values are based on 252 EVs,
@@ -210,61 +128,34 @@ export default function StatsPage({ pokemon }: { pokemon: Pokemon }) {
       </Text>
 
       <Text
-        style={{
-          fontSize: 16,
-          fontFamily: AppFonts.bold,
-          color: primaryColor,
-          marginTop: 30,
-        }}
+        className="text-base mt-[30px]"
+        style={{ fontFamily: AppFonts.bold, color: primaryColor }}
       >
         Type Defenses
       </Text>
       <Text
-        style={{
-          marginTop: 8,
-          fontFamily: AppFonts.regular,
-          color: TextColors.grey,
-          fontSize: 12,
-        }}
+        className="mt-2 text-xs text-text-grey"
+        style={{ fontFamily: AppFonts.regular }}
       >
         The effectiveness of each type on {pokemon.name}.
       </Text>
 
-      <View
-        style={{
-          flexDirection: "row",
-          flexWrap: "wrap",
-          marginTop: 16,
-          gap: 8,
-        }}
-      >
+      <View className="flex-row flex-wrap mt-4 gap-2">
         {defenses.map(({ type, multiplier }) => (
-          <View
-            key={type.name}
-            style={{ alignItems: "center", width: 32, marginBottom: 8 }}
-          >
+          <View key={type.name} className="items-center w-8 mb-2">
             <View
-              style={{
-                width: 28,
-                height: 28,
-                borderRadius: 4,
-                backgroundColor: type.backgroundColor,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
+              className="w-7 h-7 rounded items-center justify-center"
+              style={{ backgroundColor: type.backgroundColor }}
             >
               <Image
                 source={type.icon}
-                style={{ width: 14, height: 14, tintColor: "white" }}
+                className="w-3.5 h-3.5"
+                style={{ tintColor: "white" }}
               />
             </View>
             <Text
-              style={{
-                marginTop: 4,
-                fontFamily: AppFonts.medium,
-                fontSize: 10,
-                color: TextColors.black,
-              }}
+              className="mt-1 text-[10px] text-text-black"
+              style={{ fontFamily: AppFonts.medium }}
             >
               {formatMultiplier(multiplier)}
             </Text>
