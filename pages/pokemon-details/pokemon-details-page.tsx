@@ -77,7 +77,6 @@ export default function PokemonDetailsPage() {
   const layout = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const [index, setIndex] = useState(0);
-  const [imageLoaded, setImageLoaded] = useState(false);
 
   const renderScene = useCallback(
     ({ route }: any) => {
@@ -137,7 +136,6 @@ export default function PokemonDetailsPage() {
                   placeholderContentFit="contain"
                   style={{ width: 125, height: 125 }}
                   cachePolicy="memory-disk"
-                  onLoad={() => setImageLoaded(true)}
                 />
               </ImageBackground>
               <PokemonInfo
