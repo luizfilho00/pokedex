@@ -6,7 +6,12 @@ import { AppFonts } from "@/shared/ui/fonts";
 import { useLocalSearchParams } from "expo-router";
 import { useCallback, useState } from "react";
 import { Image as ExpoImage } from "expo-image";
-import { ActivityIndicator, ImageBackground, useWindowDimensions, View } from "react-native";
+import {
+  ActivityIndicator,
+  ImageBackground,
+  useWindowDimensions,
+  View,
+} from "react-native";
 import { TabBar, TabBarItem, TabView } from "react-native-tab-view";
 import AboutPage from "./about-page";
 import StatsPage from "./stats-page";
@@ -126,10 +131,17 @@ export default function PokemonDetailsPage() {
                 source={require("@/assets/images/circle.png")}
                 className="mr-6"
               >
-                <ExpoImage source={{ uri: pokemon.image }} placeholder={require("@/assets/images/silhouette.png")} placeholderContentFit="contain" style={{ width: 125, height: 125 }} tintColor={imageLoaded ? undefined : "#A0A0A0"} cachePolicy="memory-disk" onLoad={() => setImageLoaded(true)} />
+                <ExpoImage
+                  source={{ uri: pokemon.image }}
+                  placeholder={require("@/assets/images/silhouette.png")}
+                  placeholderContentFit="contain"
+                  style={{ width: 125, height: 125 }}
+                  cachePolicy="memory-disk"
+                  onLoad={() => setImageLoaded(true)}
+                />
               </ImageBackground>
               <PokemonInfo
-              className="flex-1"
+                className="flex-1"
                 id={`#${pokemon.id}`}
                 name={pokemon.name}
                 types={pokemon.types}
