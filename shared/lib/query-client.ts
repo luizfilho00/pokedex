@@ -11,8 +11,8 @@ export const persister = createAsyncStoragePersister({
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 100, // Data never goes stale - treat as permanent database
-      gcTime: 100, // Data never gets garbage collected - persist forever
+      staleTime: Infinity, // Data never goes stale - treat as permanent database
+      gcTime: Infinity, // Data never gets garbage collected - persist forever
       retry: 2, // Retry failed requests twice
       refetchOnWindowFocus: false, // Don't refetch when app comes to foreground
       refetchOnReconnect: false, // Don't refetch on reconnect (trust local data)
