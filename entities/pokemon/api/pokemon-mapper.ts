@@ -49,14 +49,12 @@ export function mapPokemonResponse(pokemonApiResponse: PokemonApiResponse): Poke
     id: String(pokemonApiResponse.id).padStart(3, "0"),
     name: `${pokemonApiResponse.name.charAt(0).toUpperCase()}${pokemonApiResponse.name.slice(1)}`,
     types: pokemonApiResponse.types.map((type) => {
-      return mapResponseTypeToPokemonType(type.type.name);
+      return mapResponseTypeToPokemonType(type);
     }),
-    image: `https://raw.githubusercontent.com/HybridShivam/Pokemon/master/assets/images/${String(
-      pokemonApiResponse.id
-    ).padStart(3, "0")}.png`,
-    stats: mapPokemonStats(pokemonApiResponse.stats),
-    height: pokemonApiResponse.height,
-    weight: pokemonApiResponse.weight,
+    image: pokemonApiResponse.sprite_url,
+    stats: mapPokemonStats(pokemonApiResponse.stats.base),
+    height: pokemonApiResponse.about.height_m,
+    weight: pokemonApiResponse.about.weight_kg,
   };
 }
 

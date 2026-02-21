@@ -1,12 +1,10 @@
 import captalize from "@/shared/lib/captalize";
 
 export interface PokemonStatResponse {
+  name: string;
   base_stat: number;
-  effort: number;
-  stat: {
-    name: string;
-    url: string;
-  };
+  min?: number;
+  max?: number;
 }
 
 export interface PokemonStats {
@@ -18,9 +16,8 @@ export interface PokemonStats {
 export function mapPokemonStat(stat: PokemonStatResponse): PokemonStats {
   return {
     baseStat: stat.base_stat,
-    effort: stat.effort,
-    name:
-      captalize(stat.stat.name).replace("-", " "),
+    effort: 0,
+    name: captalize(stat.name).replace("-", " "),
   };
 }
 
@@ -43,7 +40,7 @@ export function mapPokemonStatsToObject(
   const statsMap: Record<string, number> = {};
 
   stats.forEach((stat) => {
-    statsMap[stat.stat.name] = stat.base_stat;
+    statsMap[stat.name] = stat.base_stat;
   });
 
   return {

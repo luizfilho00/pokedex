@@ -1,7 +1,7 @@
 import { Pokemon } from "@/entities/pokemon";
 import { fetchPokemons } from "@/entities/pokemon/api/pokemon-api";
 import { pokemonKeys } from "@/shared/lib/query-keys";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
 
 interface LoadPokemonsState {
@@ -23,10 +23,15 @@ export interface LoadPokemonsResult {
 }
 
 export function useLoadPokemons(limit: number = 30) {
+  const queryClient = useQueryClient();
   const query = useInfiniteQuery({
     queryKey: pokemonKeys.lists(),
     queryFn: async ({ pageParam }) => {
-      return fetchPokemons(limit, pageParam);
+      const pokemons = await fetchPokemons(limit, pageParam);
+      pokemons.forEach((pokemon: Pokemon) => {
+        queryClient.setQueryData(pokemonKeys.detail(pokemon.id), pokemon);
+      });
+      return pokemons;
     },
     initialPageParam: 0,
     getNextPageParam: (lastPage, _allPages, lastPageParam) => {
