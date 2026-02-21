@@ -1,10 +1,11 @@
-import { Pokemon } from "@/entities/pokemon";
+import { Pokemon, fetchPokemonsByQuery } from "@/entities/pokemon";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 interface PokemonSearchState {
   isSearching: boolean;
   pokemons: Pokemon[] | null;
   isApiSearching: boolean;
+  hasApiError: boolean;
 }
 
 interface PokemonSearchActions {
@@ -37,7 +38,11 @@ function filterByText(pokemons: Pokemon[], text: string): Pokemon[] {
 
 export function useFilterPokemonList(pokemons: Pokemon[] | null) {
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const [apiResults, setApiResults] = useState<Pokemon[] | null>(null);
+  const [hasApiResults, setHasApiResults] = useState(false);
+  const [hasApiError, setHasApiError] = useState(false);
   const timerRef = useRef<SearchTermTimeout | null>(null);
+  const searchTermRef = useRef("");
 
   const shouldSearch = debouncedSearchTerm.length > 0 && pokemons !== null;
 
@@ -64,18 +69,51 @@ export function useFilterPokemonList(pokemons: Pokemon[] | null) {
     };
   }, []);
 
+  useEffect(() => {
+    if (!debouncedSearchTerm) {
+      setApiResults(null);
+      setHasApiResults(false);
+      setHasApiError(false);
+      return;
+    }
+
+    searchTermRef.current = debouncedSearchTerm;
+    setHasApiResults(false);
+    setHasApiError(false);
+
+    const fetchFromApi = async () => {
+      try {
+        const results = await fetchPokemonsByQuery(debouncedSearchTerm);
+        if (searchTermRef.current === debouncedSearchTerm) {
+          setApiResults(results);
+          setHasApiResults(true);
+        }
+      } catch {
+        if (searchTermRef.current === debouncedSearchTerm) {
+          setHasApiError(true);
+        }
+      }
+    };
+
+    fetchFromApi();
+  }, [debouncedSearchTerm]);
+
   const finalPokemons = useMemo(() => {
+    if (hasApiResults && apiResults) {
+      return apiResults;
+    }
     if (!shouldSearch) return pokemons;
     return filterByText(pokemons!, debouncedSearchTerm);
-  }, [shouldSearch, pokemons, debouncedSearchTerm]);
+  }, [shouldSearch, pokemons, debouncedSearchTerm, hasApiResults, apiResults]);
 
   const memoizedState = useMemo(
     () => ({
       pokemons: finalPokemons,
       isSearching: debouncedSearchTerm.length > 0,
       isApiSearching: false,
+      hasApiError,
     }),
-    [finalPokemons, debouncedSearchTerm],
+    [finalPokemons, debouncedSearchTerm, hasApiError],
   );
 
   return {

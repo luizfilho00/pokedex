@@ -65,7 +65,21 @@ export async function fetchPokemons(limit: number, offset: number): Promise<Poke
   }
   const data = await response.json();
   
-  return data.results.map((p: PokemonApiResponse) => ({
+  return data.results.map((p: PokemonApiResponse) => mapApiResponseToPokemon(p));
+}
+
+export async function fetchPokemonsByQuery(query: string): Promise<Pokemon[]> {
+  const response = await fetch(`${BASE_URL}/pokemon?query=${encodeURIComponent(query)}`);
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+  const data = await response.json();
+  
+  return data.results.map((p: PokemonApiResponse) => mapApiResponseToPokemon(p));
+}
+
+function mapApiResponseToPokemon(p: PokemonApiResponse): Pokemon {
+  return {
     id: String(p.id).padStart(3, "0"),
     name: p.name,
     types: p.types.map((t) => mapResponseTypeToPokemonType(t)),
@@ -85,5 +99,5 @@ export async function fetchPokemons(limit: number, offset: number): Promise<Poke
       id: String(loc.id),
       name: loc.name,
     })),
-  }));
+  };
 }

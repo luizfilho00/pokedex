@@ -1,4 +1,4 @@
-export { fetchPokemons } from "./api/pokemon-api";
+export { fetchPokemons, fetchPokemonsByQuery } from "./api/pokemon-api";
 export { Pokemon, PokemonPreview, EvolutionStage } from "./model/pokemon";
 export { PokemonStats } from "./model/pokemon-stats";
 export {
