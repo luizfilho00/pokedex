@@ -1,4 +1,4 @@
-import { EvolutionStage, Pokemon, PokemonPreview } from "../model/pokemon";
+import { EvolutionStage, Pokemon } from "../model/pokemon";
 import { PokemonApiResponse } from "./pokemon-api-response";
 import { mapResponseTypeToPokemonType } from "./pokemon-mapper";
 import { mapPokemonStats } from "../model/pokemon-stats";
@@ -86,48 +86,4 @@ export async function fetchPokemons(limit: number, offset: number): Promise<Poke
       name: loc.name,
     })),
   }));
-}
-
-export async function fetchAllPokemonPreviews(): Promise<PokemonPreview[]> {
-  const response = await fetch(`${BASE_URL}/pokemon?limit=10000&offset=0`);
-  if (!response.ok) {
-    throw new Error("Network response was not ok");
-  }
-  const data = await response.json();
-  return data.results.map((p: PokemonApiResponse) => ({
-    id: String(p.id).padStart(3, "0"),
-    name: p.name,
-  }));
-}
-
-export async function searchPokemonByName(query: string): Promise<Pokemon | null> {
-  try {
-    const normalizedQuery = query.toLowerCase().trim();
-    if (!normalizedQuery) {
-      return null;
-    }
-
-    const response = await fetch(`${BASE_URL}/pokemon/${normalizedQuery}`);
-
-    if (response.status === 404) {
-      return null;
-    }
-
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-
-    const data: PokemonApiResponse = await response.json();
-    
-    return {
-      id: String(data.id).padStart(3, "0"),
-      name: data.name,
-      types: data.types.map((t) => mapResponseTypeToPokemonType(t)),
-      image: data.sprite_url,
-      stats: mapPokemonStats(data.stats.base),
-    };
-  } catch (error) {
-    console.error("Error searching Pokémon:", error);
-    throw error;
-  }
 }

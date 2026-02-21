@@ -1,3 +1,4 @@
+import { Image } from "react-native";
 import { render } from "@testing-library/react-native";
 import { EmptyState } from "../empty-state";
 
@@ -26,8 +27,8 @@ describe("EmptyState", () => {
       />
     );
 
-    const images = UNSAFE_getByType("Image");
-    expect(images.props.source).toBe(mockImage);
+    const image = UNSAFE_getByType(Image);
+    expect(image.props.source).toBe(mockImage);
   });
 
   it("should apply className prop correctly", () => {

@@ -1,6 +1,6 @@
-export { fetchPokemons, fetchAllPokemonPreviews } from "./api/pokemon-api";
+export { fetchPokemons } from "./api/pokemon-api";
 export { Pokemon, PokemonPreview, EvolutionStage } from "./model/pokemon";
-export { PokemonStats, PokemonStatsObject } from "./model/pokemon-stats";
+export { PokemonStats } from "./model/pokemon-stats";
 export {
   BugType,
   DarkType,
