@@ -29,12 +29,20 @@ export async function fetchPokemon(id: string): Promise<Pokemon> {
     }
     const data: PokemonApiResponse = await response.json();
     
+    const evYieldMap = data.training.ev_yield.reduce(
+      (acc, { stat, amount }) => {
+        acc[stat.toLowerCase()] = amount;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
+
     const pokemon: Pokemon = {
       id: String(data.id).padStart(3, "0"),
       name: data.name,
       types: data.types.map((t) => mapResponseTypeToPokemonType(t)),
       image: data.sprite_url,
-      stats: mapPokemonStats(data.stats.base),
+      stats: mapPokemonStats(data.stats.base, evYieldMap),
       description: data.about.description,
       genus: data.about.species,
       height: data.about.height_m,
@@ -84,12 +92,20 @@ export async function fetchPokemonsByQuery(query: string, limit: number, offset:
 }
 
 function mapApiResponseToPokemon(p: PokemonApiResponse): Pokemon {
+  const evYieldMap = p.training.ev_yield.reduce(
+    (acc, { stat, amount }) => {
+      acc[stat.toLowerCase()] = amount;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
+
   return {
     id: String(p.id).padStart(3, "0"),
     name: p.name,
     types: p.types.map((t) => mapResponseTypeToPokemonType(t)),
     image: p.sprite_url,
-    stats: mapPokemonStats(p.stats.base),
+    stats: mapPokemonStats(p.stats.base, evYieldMap),
     description: p.about.description,
     genus: p.about.species,
     height: p.about.height_m,

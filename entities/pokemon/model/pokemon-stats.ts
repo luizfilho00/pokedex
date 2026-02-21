@@ -13,14 +13,21 @@ export interface PokemonStats {
   name: string;
 }
 
-export function mapPokemonStat(stat: PokemonStatResponse): PokemonStats {
+export function mapPokemonStat(stat: PokemonStatResponse, effort = 0): PokemonStats {
   return {
     baseStat: stat.base_stat,
-    effort: 0,
+    effort,
     name: captalize(stat.name).replace("-", " "),
   };
 }
 
-export function mapPokemonStats(stats: PokemonStatResponse[]): PokemonStats[] {
-  return stats.map(mapPokemonStat);
+export function mapPokemonStats(
+  stats: PokemonStatResponse[],
+  evYield?: Record<string, number>,
+): PokemonStats[] {
+  return stats.map((stat) => {
+    const statName = stat.name.toLowerCase().replace(" ", "-");
+    const effort = evYield?.[statName] ?? 0;
+    return mapPokemonStat(stat, effort);
+  });
 }
