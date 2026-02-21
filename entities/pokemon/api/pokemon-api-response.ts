@@ -1,13 +1,55 @@
-import { PokemonStatResponse } from "../model/pokemon-stats";
+import { PokemonStats, PokemonStatResponse } from "../model/pokemon-stats";
 
 export interface PokemonsApiResponse {
-  results: PokemonPreviewApiResponse[];
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: PokemonApiResponse[];
 }
 
 export interface PokemonPreviewApiResponse {
+  id: number;
+  number: string;
   name: string;
-  url: string;
+  sprite_url: string;
+  types: string[];
+  about: {
+    description: string;
+    species: string;
+    height_m: number;
+    weight_kg: number;
+    weaknesses: string[];
+    gender: {
+      male_percent: number;
+      female_percent: number;
+      is_genderless: boolean;
+    };
+  };
+  stats: {
+    base: PokemonStatResponse[];
+    total: number;
+  };
+  type_defenses: {
+    attacking_type: string;
+    multiplier: number;
+  }[];
+  training: {
+    ev_yield: { stat: string; amount: number }[];
+    catch_rate: number;
+    base_friendship: number;
+    base_experience: number;
+    growth_rate: string;
+  };
+  locations: { id: number; name: string }[];
+  evolution_chain: {
+    id: number;
+    name: string;
+    sprite_url: string;
+    trigger: string | null;
+  }[];
 }
+
+export type PokemonApiResponse = PokemonPreviewApiResponse;
 
 export interface PokemonTypeResponse {
   slot: number;
@@ -15,16 +57,6 @@ export interface PokemonTypeResponse {
     name: string;
     url: string;
   };
-}
-
-export interface PokemonApiResponse {
-  id: number;
-  name: string;
-  height: number;
-  weight: number;
-  base_experience: number;
-  stats: PokemonStatResponse[];
-  types: PokemonTypeResponse[];
 }
 
 export interface PokemonSpeciesApiResponse {
@@ -58,7 +90,7 @@ export interface PokemonTypeDamageResponse {
     half_damage_to: { name: string }[];
     no_damage_from: { name: string }[];
     no_damage_to: { name: string }[];
-  }
+  };
 }
 
 export interface PokemonLocationResponse {

@@ -1,7 +1,4 @@
-import { Pokemon, PokemonPreview } from "@/entities/pokemon";
-import { fetchPokemon } from "@/entities/pokemon/api/pokemon-api";
-import { pokemonKeys } from "@/shared/lib/query-keys";
-import { useQuery } from "@tanstack/react-query";
+import { Pokemon } from "@/entities/pokemon";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 interface PokemonSearchState {
@@ -24,44 +21,25 @@ interface SearchTermTimeout {
   name: string;
 }
 
-function filterPreviewsByText(previews: PokemonPreview[], text: string): PokemonPreview[] {
+function filterByText(pokemons: Pokemon[], text: string): Pokemon[] {
   const searchTerm = text.toLowerCase();
-  return previews.filter((preview) => {
-    if (preview.name.toLowerCase().includes(searchTerm)) {
+  return pokemons.filter((pokemon) => {
+    if (pokemon.name.toLowerCase().includes(searchTerm)) {
       return true;
     }
     const numericId = Number(searchTerm);
     if (!isNaN(numericId)) {
-      return Number(preview.id) === numericId;
+      return Number(pokemon.id) === numericId;
     }
     return false;
   });
 }
 
-export function useFilterPokemonList(
-  pokemons: Pokemon[] | null,
-  previews: PokemonPreview[] | null,
-) {
+export function useFilterPokemonList(pokemons: Pokemon[] | null) {
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const timerRef = useRef<SearchTermTimeout | null>(null);
 
-  const shouldSearch = debouncedSearchTerm.length > 0 && previews !== null;
-
-  const matchingPreviewIds = useMemo(() => {
-    if (!shouldSearch) return [];
-    return filterPreviewsByText(previews!, debouncedSearchTerm).map((p) => p.id);
-  }, [shouldSearch, previews, debouncedSearchTerm]);
-
-  const directorySearchQuery = useQuery({
-    queryKey: pokemonKeys.search(debouncedSearchTerm),
-    queryFn: async () => {
-      const results = await Promise.allSettled(matchingPreviewIds.map((id) => fetchPokemon(id)));
-      return results
-        .filter((r): r is PromiseFulfilledResult<Pokemon> => r.status === "fulfilled")
-        .map((r) => r.value);
-    },
-    enabled: shouldSearch && matchingPreviewIds.length > 0,
-  });
+  const shouldSearch = debouncedSearchTerm.length > 0 && pokemons !== null;
 
   const onSearch = useCallback((name: string) => {
     if (timerRef.current?.timeoutRef) {
@@ -69,7 +47,7 @@ export function useFilterPokemonList(
     }
     const timeout = setTimeout(() => {
       setDebouncedSearchTerm(name);
-    }, 500);
+    }, 300);
     timerRef.current = {
       timeoutRef: timeout,
       name: name,
@@ -88,21 +66,16 @@ export function useFilterPokemonList(
 
   const finalPokemons = useMemo(() => {
     if (!shouldSearch) return pokemons;
-    if (matchingPreviewIds.length === 0) return [];
-    if (directorySearchQuery.isLoading) return [];
-    if (directorySearchQuery.data) return directorySearchQuery.data;
-    return [];
-  }, [shouldSearch, pokemons, matchingPreviewIds.length, directorySearchQuery.isLoading, directorySearchQuery.data]);
-
-  const isDirectorySearching = shouldSearch && matchingPreviewIds.length > 0 && directorySearchQuery.isLoading;
+    return filterByText(pokemons!, debouncedSearchTerm);
+  }, [shouldSearch, pokemons, debouncedSearchTerm]);
 
   const memoizedState = useMemo(
     () => ({
       pokemons: finalPokemons,
       isSearching: debouncedSearchTerm.length > 0,
-      isApiSearching: isDirectorySearching,
+      isApiSearching: false,
     }),
-    [finalPokemons, debouncedSearchTerm, isDirectorySearching],
+    [finalPokemons, debouncedSearchTerm],
   );
 
   return {

@@ -5,7 +5,6 @@ import {
   useFilterPokemonList,
   type PokemonSearchResult,
 } from "@/features/filter-pokemon-list";
-import { usePrefetchPokemonDirectory } from "@/features/prefetch-pokemon-directory";
 
 interface PokemonListContextValue {
   headerHeight: SharedValue<number>;
@@ -26,13 +25,9 @@ export function PokemonListProvider({ children }: { children: React.ReactNode })
   const isSticky = useSharedValue(false);
   const [showScrollButton, setShowScrollButton] = useState(false);
 
-  const { state: directoryState } = usePrefetchPokemonDirectory();
-  const { state: loadPokemonsState, actions: loadPokemonsActions } = useLoadPokemons(
-    directoryState.previews,
-  );
+  const { state: loadPokemonsState, actions: loadPokemonsActions } = useLoadPokemons();
   const { state: searchState, actions: searchActions } = useFilterPokemonList(
     loadPokemonsState.pokemons,
-    directoryState.previews,
   );
 
   const [searchValue, setSearchValue] = useState("");
