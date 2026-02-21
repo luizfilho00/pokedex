@@ -33,7 +33,7 @@ describe("useLoadPokemons with React Query", () => {
   it("should load pokemons on initial render", async () => {
     fetchPokemons.mockResolvedValueOnce([mockPokemon1, mockPokemon2]);
 
-    const { result } = renderHook(() => useLoadPokemons(10), {
+    const { result } = renderHook(() => useLoadPokemons({ limit: 10 }), {
       wrapper: createWrapper(),
     });
 
@@ -51,7 +51,7 @@ describe("useLoadPokemons with React Query", () => {
   it("should handle loading states correctly", async () => {
     fetchPokemons.mockResolvedValueOnce([mockPokemon1]);
 
-    const { result } = renderHook(() => useLoadPokemons(10), {
+    const { result } = renderHook(() => useLoadPokemons({ limit: 10 }), {
       wrapper: createWrapper(),
     });
 
@@ -70,7 +70,7 @@ describe("useLoadPokemons with React Query", () => {
     const errorMessage = "Network error";
     fetchPokemons.mockRejectedValueOnce(new Error(errorMessage));
 
-    const { result } = renderHook(() => useLoadPokemons(10), {
+    const { result } = renderHook(() => useLoadPokemons({ limit: 10 }), {
       wrapper: createWrapper(),
     });
 
@@ -87,7 +87,7 @@ describe("useLoadPokemons with React Query", () => {
       .mockResolvedValueOnce([mockPokemon1, mockPokemon2])
       .mockResolvedValueOnce([mockPokemon1, mockPokemon2]);
 
-    const { result } = renderHook(() => useLoadPokemons(2), {
+    const { result } = renderHook(() => useLoadPokemons({ limit: 2 }), {
       wrapper: createWrapper(),
     });
 
@@ -114,7 +114,7 @@ describe("useLoadPokemons with React Query", () => {
   it("should detect end of items when page has fewer items than limit", async () => {
     fetchPokemons.mockResolvedValueOnce([mockPokemon1]);
 
-    const { result } = renderHook(() => useLoadPokemons(10), {
+    const { result } = renderHook(() => useLoadPokemons({ limit: 10 }), {
       wrapper: createWrapper(),
     });
 
@@ -136,7 +136,7 @@ describe("useLoadPokemons with React Query", () => {
 
     fetchPokemons.mockResolvedValue(pokemons);
 
-    const { result } = renderHook(() => useLoadPokemons(10), {
+    const { result } = renderHook(() => useLoadPokemons({ limit: 10 }), {
       wrapper: createWrapper(),
     });
 

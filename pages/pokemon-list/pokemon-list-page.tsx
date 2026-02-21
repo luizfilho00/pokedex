@@ -20,7 +20,7 @@ export default function PokemonListPage() {
 }
 
 function PokemonListPageContent() {
-  const { showScrollButton, loadPokemonsState, loadPokemonsActions, searchState } =
+  const { showScrollButton, loadPokemonsState, loadPokemonsActions, searchValue } =
     usePokemonListContext();
   const { refList, handleScroll, scrollToTop } = usePokemonListScroll<ListItem>();
   const { listData, showFooterLoading } = usePokemonListData();
@@ -28,8 +28,7 @@ function PokemonListPageContent() {
 
   const renderItem = useCallback(
     ({ item }: { item: ListItem }) => <PokemonListItem item={item} />,
-    [],
-  );
+    []);
 
   return (
     <View className="flex-1">
@@ -47,7 +46,7 @@ function PokemonListPageContent() {
         removeClippedSubviews={true}
         ListHeaderComponent={<PokemonListHeader />}
         onEndReached={
-          searchState.isSearching || loadPokemonsState.endOfItems
+          loadPokemonsState.endOfItems
             ? undefined
             : loadPokemonsActions.fetchNextPage
         }

@@ -10,36 +10,28 @@ export type ListItem =
   | { id: string; type: "pokemon"; data: Pokemon };
 
 export function usePokemonListData() {
-  const { loadPokemonsState, searchState } = usePokemonListContext();
+  const { loadPokemonsState, searchValue } = usePokemonListContext();
 
-  const displayPokemons = searchState.isSearching
-    ? searchState.pokemons
-    : loadPokemonsState.pokemons;
+  const isSearching = searchValue.length > 0;
 
-  const showFooterLoading =
-    (loadPokemonsState.isNextPageLoading && !searchState.isSearching) ||
-    searchState.isApiSearching;
+  const showFooterLoading = loadPokemonsState.isNextPageLoading;
 
   const listData: ListItem[] = useMemo(() => {
     const items: ListItem[] = [{ id: "search-bar", type: "search" }];
-    if (loadPokemonsState.loading && !searchState.isSearching) {
+    if (loadPokemonsState.loading) {
       items.push({ id: "loading-state", type: "loading" });
       return items;
     }
-    if (loadPokemonsState.isFirstPageError && !searchState.isSearching) {
+    if (loadPokemonsState.isFirstPageError) {
       items.push({ id: "error-state", type: "error" });
       return items;
     }
-    if (
-      searchState.isSearching &&
-      !searchState.isApiSearching &&
-      displayPokemons?.length === 0
-    ) {
+    if (isSearching && loadPokemonsState.pokemons?.length === 0) {
       items.push({ id: "empty-state", type: "empty" });
       return items;
     }
     items.push(
-      ...(displayPokemons?.map((p) => ({
+      ...(loadPokemonsState.pokemons?.map((p: Pokemon) => ({
         id: p.id,
         type: "pokemon" as const,
         data: p,
@@ -47,11 +39,10 @@ export function usePokemonListData() {
     );
     return items;
   }, [
-    displayPokemons,
-    searchState.isSearching,
-    searchState.isApiSearching,
+    loadPokemonsState.pokemons,
     loadPokemonsState.isFirstPageError,
     loadPokemonsState.loading,
+    isSearching,
   ]);
 
   return { listData, showFooterLoading };

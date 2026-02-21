@@ -1,6 +1,7 @@
 import { TextColors } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { Image, Keyboard, Platform, Pressable, TextInput, View } from "react-native";
+import { useEffect, useState } from "react";
 
 interface SearchBarProps {
   value?: string;
@@ -15,11 +16,19 @@ export function SearchBar({
   placeholder = "Search Pokémon",
   className,
 }: SearchBarProps) {
+  const [localValue, setLocalValue] = useState(value);
+
+  useEffect(() => {
+    setLocalValue(value);
+  }, [value]);
+
   const handleClear = () => {
     Keyboard.dismiss();
+    setLocalValue("");
     onSearch("");
   };
   const handleChange = (text: string) => {
+    setLocalValue(text);
     onSearch(text);
   };
   return (
@@ -48,9 +57,9 @@ export function SearchBar({
             height: 20,
           }),
         }}
-        value={value}
+        value={localValue}
       />
-      {value.length > 0 && (
+      {localValue.length > 0 && (
         <Pressable onPress={handleClear} className="p-2">
           <Ionicons name="close" size={20} color={TextColors.grey} />
         </Pressable>

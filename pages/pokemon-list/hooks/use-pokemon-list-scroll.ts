@@ -4,12 +4,12 @@ import { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
 import { usePokemonListContext } from "../context/pokemon-list-context";
 
 export function usePokemonListScroll<T>() {
-  const { loadPokemonsState, searchState, headerHeight, isSticky, setShowScrollButton } =
+  const { loadPokemonsState, searchValue, headerHeight, isSticky, setShowScrollButton } =
     usePokemonListContext();
 
   const listIsNotEmpty =
     loadPokemonsState.pokemons !== null && loadPokemonsState.pokemons.length > 0;
-  const isSearching = searchState.isSearching;
+  const isSearching = searchValue.length > 0;
 
   const refList = useRef<FlashListRef<T> | null>(null);
   const refPreviousIsSearching = useRef(isSearching);

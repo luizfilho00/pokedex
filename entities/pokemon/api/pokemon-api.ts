@@ -68,8 +68,13 @@ export async function fetchPokemons(limit: number, offset: number): Promise<Poke
   return data.results.map((p: PokemonApiResponse) => mapApiResponseToPokemon(p));
 }
 
-export async function fetchPokemonsByQuery(query: string): Promise<Pokemon[]> {
-  const response = await fetch(`${BASE_URL}/pokemon?query=${encodeURIComponent(query)}`);
+export async function fetchPokemonsByQuery(query: string, limit: number, offset: number): Promise<Pokemon[]> {
+  const params = new URLSearchParams({
+    query,
+    limit: String(limit),
+    offset: String(offset),
+  });
+  const response = await fetch(`${BASE_URL}/pokemon?${params}`);
   if (!response.ok) {
     throw new Error("Network response was not ok");
   }
