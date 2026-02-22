@@ -72,15 +72,19 @@ export const PokemonCard = React.memo(function PokemonCard({
         />
         <ExpoImage
           source={{ uri: pokemon.image }}
-          placeholder={
-            imageLoadError ? require("@/assets/images/silhouette.png") : undefined
-          }
           placeholderContentFit="contain"
           style={{ width: 130, height: 130, position: "absolute", right: 10 }}
           cachePolicy="memory-disk"
           recyclingKey={pokemon.id}
           onError={() => setImageLoadError(true)}
+          onLoad={() => setImageLoadError(false)}
         />
+        {imageLoadError && (
+          <Image
+            source={require("@/assets/images/silhouette.png")}
+            style={{ width: 130, height: 130, position: "absolute", right: 10 }}
+          />
+        )}
       </Animated.View>
     </Pressable>
   );

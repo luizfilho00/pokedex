@@ -18,7 +18,7 @@ export default function PokemonInfo({ id, name, types, className }: PokemonInfoP
       <Text className="text-xs font-bold text-text-number">
         {id}
       </Text>
-      <Text className="text-[26px] font-bold text-white">
+      <Text className="text-[26px] font-bold text-white mr-3">
         {name}
       </Text>
       <View className="flex-row items-center self-start mt-1.5 gap-1.5">
