@@ -6,21 +6,13 @@ import { useCallback } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { PokemonListHeader } from "./components/pokemon-list-header";
 import { PokemonListItem } from "./components/pokemon-list-item";
-import { PokemonListProvider, usePokemonListContext } from "./context/pokemon-list-context";
+import { usePokemonListContext } from "./context/pokemon-list-context";
 import { usePokemonListData, type ListItem } from "./hooks/use-pokemon-list-data";
 import { usePokemonListScroll } from "./hooks/use-pokemon-list-scroll";
 import { usePokemonListToast } from "./hooks/use-pokemon-list-toast";
 
 export default function PokemonListPage() {
-  return (
-    <PokemonListProvider>
-      <PokemonListPageContent />
-    </PokemonListProvider>
-  );
-}
-
-function PokemonListPageContent() {
-  const { showScrollButton, loadPokemonsState, loadPokemonsActions, searchValue } =
+  const { showScrollButton, loadPokemonsState, loadPokemonsActions } =
     usePokemonListContext();
   const { refList, handleScroll, scrollToTop } = usePokemonListScroll<ListItem>();
   const { listData, showFooterLoading } = usePokemonListData();

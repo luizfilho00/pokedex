@@ -3,20 +3,15 @@ import { EvolutionStage } from "@/entities/pokemon/model/pokemon";
 import { AppFonts } from "@/shared/ui/fonts";
 import { Image as ExpoImage } from "expo-image";
 import { useRouter } from "expo-router";
-import { View, Text, ScrollView, Pressable } from "react-native";
+import { useState } from "react";
+import { View, Text, ScrollView, Pressable, Image } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
 } from "react-native-reanimated";
 
-function EvolutionPair({
-  from,
-  to,
-}: {
-  from: EvolutionStage;
-  to: EvolutionStage;
-}) {
+function EvolutionPair({ from, to }: { from: EvolutionStage; to: EvolutionStage }) {
   const triggerLabel =
     to.minLevel != null
       ? `Level ${to.minLevel}`
@@ -33,11 +28,7 @@ function EvolutionPair({
       <View className="items-center flex-1">
         <Text className="text-3xl text-text-grey/20">→</Text>
         {triggerLabel ? (
-          <Text
-            className="text-xs mt-1 text-text-black font-bold"
-          >
-            ({triggerLabel})
-          </Text>
+          <Text className="text-xs mt-1 text-text-black font-bold">({triggerLabel})</Text>
         ) : null}
       </View>
       <PokemonStageView stage={to} />
@@ -51,6 +42,7 @@ function PokemonStageView({ stage }: { stage: EvolutionStage }) {
   const style = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
   }));
+  const [loadError, setLoadError] = useState(false);
 
   const handlePressIn = () => {
     scale.value = withSpring(0.85);
@@ -88,6 +80,8 @@ function PokemonStageView({ stage }: { stage: EvolutionStage }) {
           <ExpoImage
             source={{ uri: stage.image }}
             style={{ width: 75, height: 75 }}
+            placeholder={require("@/assets/images/silhouette.png")}
+            placeholderContentFit="contain"
             contentFit="contain"
             cachePolicy="memory-disk"
           />
@@ -136,11 +130,7 @@ export default function EvolutionPage({ pokemon }: { pokemon: Pokemon }) {
         chain
           .slice(0, -1)
           .map((from, index) => (
-            <EvolutionPair
-              key={from.id}
-              from={from}
-              to={chain[index + 1]}
-            />
+            <EvolutionPair key={from.id} from={from} to={chain[index + 1]} />
           ))
       )}
     </ScrollView>

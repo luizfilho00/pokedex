@@ -50,7 +50,7 @@ export default function RootLayout() {
             headerTintColor: "#FFFFFF",
           }}
         >
-          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="(pokemon-list)" options={{ headerShown: false }} />
           <Stack.Screen name="(pokemon)" />
         </Stack>
       </SafeAreaProvider>

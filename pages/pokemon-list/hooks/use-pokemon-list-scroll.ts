@@ -13,16 +13,18 @@ export function usePokemonListScroll<T>() {
 
   const refList = useRef<FlashListRef<T> | null>(null);
   const refPreviousIsSearching = useRef(isSearching);
+  const refIsFirstEffectRun = useRef(true);
 
   useEffect(() => {
     const wasSearching = refPreviousIsSearching.current;
-    if (wasSearching !== isSearching && listIsNotEmpty) {
+    if (wasSearching !== isSearching && listIsNotEmpty && !refIsFirstEffectRun.current) {
       refList?.current?.scrollToOffset({
         offset: 0,
         animated: true,
       });
     }
     refPreviousIsSearching.current = isSearching;
+    refIsFirstEffectRun.current = false;
   }, [listIsNotEmpty, isSearching, refList]);
 
   const handleScroll = useCallback(
