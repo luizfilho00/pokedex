@@ -1,9 +1,9 @@
 import {
-  Image,
   ImageSourcePropType,
   Text,
   View,
 } from "react-native";
+import { Image } from "expo-image";
 
 interface BadgeProps {
   image: ImageSourcePropType;
@@ -20,8 +20,8 @@ export function Badge({ image, label, backgroundColor, className }: BadgeProps) 
     >
       <Image
         source={image}
-        className="w-4 h-4"
-        style={{ tintColor: "white" }}
+        style={{ tintColor: "white", width: 16, height: 16 }}
+        contentFit="contain"
       />
       <Text className="text-white ml-1.5 text-xs font-medium">
         {label}
