@@ -1,8 +1,9 @@
 import { IconButton } from "@/components/ui/icon-button";
+import { DEFAULT_FILTERS } from "@/features/filter-pokemon-list";
 import { ImageBackground, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { usePokemonListContext } from "../context/pokemon-list-context";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import type { LayoutChangeEvent } from "react-native";
 
 interface PokemonListHeaderProps {
@@ -13,7 +14,18 @@ interface PokemonListHeaderProps {
 
 export const PokemonListHeader = ({ onFilterPress, onSortPress, onGenerationPress }: PokemonListHeaderProps) => {
   const insets = useSafeAreaInsets();
-  const { headerHeight } = usePokemonListContext();
+  const { headerHeight, filters, sortOption, generation } = usePokemonListContext();
+
+  const hasActiveFilters = useMemo(
+    () =>
+      filters.types.length > 0 ||
+      filters.weaknesses.length > 0 ||
+      filters.heights.length > 0 ||
+      filters.weights.length > 0 ||
+      filters.numberRange[0] !== DEFAULT_FILTERS.numberRange[0] ||
+      filters.numberRange[1] !== DEFAULT_FILTERS.numberRange[1],
+    [filters],
+  );
 
   const handleLayout = useCallback(
     (e: LayoutChangeEvent) => {
@@ -35,7 +47,14 @@ export const PokemonListHeader = ({ onFilterPress, onSortPress, onGenerationPres
         }}
       >
         <View style={{ marginTop: insets.top }}>
-          <TopBarActions onFilterPress={onFilterPress} onSortPress={onSortPress} onGenerationPress={onGenerationPress} />
+          <TopBarActions
+            onFilterPress={onFilterPress}
+            onSortPress={onSortPress}
+            onGenerationPress={onGenerationPress}
+            hasActiveFilters={hasActiveFilters}
+            hasActiveSort={sortOption !== "smallest-first"}
+            hasActiveGeneration={generation !== null}
+          />
           <Text className="text-[32px] font-bold px-4 text-text-black">Pokédex</Text>
           <Text className="text-base font-normal px-4 pt-2.5 text-text-grey">
             Search for Pokémon by name or using the National Pokédex number.
@@ -50,10 +69,16 @@ function TopBarActions({
   onFilterPress,
   onSortPress,
   onGenerationPress,
+  hasActiveFilters,
+  hasActiveSort,
+  hasActiveGeneration,
 }: {
   onFilterPress?: () => void;
   onSortPress?: () => void;
   onGenerationPress?: () => void;
+  hasActiveFilters: boolean;
+  hasActiveSort: boolean;
+  hasActiveGeneration: boolean;
 }) {
   return (
     <View className="flex-row self-end px-4 gap-2">
@@ -61,11 +86,17 @@ function TopBarActions({
         icon={require("@/assets/images/generation.svg")}
         size={20}
         onPress={onGenerationPress ?? (() => {})}
+        showIndicator={hasActiveGeneration}
       />
-      <IconButton icon={require("@/assets/images/sort.svg")} onPress={onSortPress ?? (() => {})} />
+      <IconButton
+        icon={require("@/assets/images/sort.svg")}
+        onPress={onSortPress ?? (() => {})}
+        showIndicator={hasActiveSort}
+      />
       <IconButton
         icon={require("@/assets/images/filter.svg")}
         onPress={onFilterPress ?? (() => {})}
+        showIndicator={hasActiveFilters}
       />
     </View>
   );
