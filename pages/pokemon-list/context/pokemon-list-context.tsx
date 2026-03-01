@@ -2,6 +2,8 @@ import { createContext, useCallback, useContext, useRef, useState } from "react"
 import { useSharedValue, type SharedValue } from "react-native-reanimated";
 import { useLoadPokemons, type LoadPokemonsResult } from "@/features/load-pokemons";
 import { DEFAULT_FILTERS, type PokemonFilters } from "@/features/filter-pokemon-list";
+import { type SortOption } from "../components/pokemon-sort-bottom-sheet";
+import { type Generation } from "../components/pokemon-generation-bottom-sheet";
 
 interface SearchTimeout {
   timeoutRef: ReturnType<typeof setTimeout>;
@@ -19,6 +21,10 @@ interface PokemonListContextValue {
   handleSearch: (text: string) => void;
   filters: PokemonFilters;
   applyFilters: (filters: PokemonFilters) => void;
+  sortOption: SortOption;
+  setSortOption: (option: SortOption) => void;
+  generation: Generation;
+  setGeneration: (gen: Generation) => void;
 }
 
 const PokemonListContext = createContext<PokemonListContextValue | null>(null);
@@ -31,6 +37,8 @@ export function PokemonListProvider({ children }: { children: React.ReactNode })
   const [searchValue, setSearchValue] = useState("");
   const searchTimeoutRef = useRef<SearchTimeout | null>(null);
   const [filters, setFilters] = useState<PokemonFilters>(DEFAULT_FILTERS);
+  const [sortOption, setSortOption] = useState<SortOption>("smallest-first");
+  const [generation, setGeneration] = useState<Generation>(null);
 
   const { state: loadPokemonsState, actions: loadPokemonsActions } = useLoadPokemons({
     searchQuery: searchValue,
@@ -66,6 +74,10 @@ export function PokemonListProvider({ children }: { children: React.ReactNode })
         handleSearch,
         filters,
         applyFilters,
+        sortOption,
+        setSortOption,
+        generation,
+        setGeneration,
       }}
     >
       {children}

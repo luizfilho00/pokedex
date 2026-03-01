@@ -11,7 +11,7 @@ export type ListItem =
   | { id: string; type: "pokemon"; data: Pokemon };
 
 export function usePokemonListData() {
-  const { loadPokemonsState, searchValue, filters } = usePokemonListContext();
+  const { loadPokemonsState, searchValue, filters, sortOption } = usePokemonListContext();
 
   const { filteredPokemons, hasActiveFilters } = useFilterPokemonList({
     pokemons: loadPokemonsState.pokemons,
@@ -34,12 +34,21 @@ export function usePokemonListData() {
       return items;
     }
 
-    const pokemons = filteredPokemons ?? [];
+    const pokemons = [...(filteredPokemons ?? [])];
 
     if ((isSearching || hasActiveFilters) && pokemons.length === 0) {
       items.push({ id: "empty-state", type: "empty" });
       return items;
     }
+
+    if (sortOption === "largest-first") {
+      pokemons.sort((a, b) => parseInt(b.id, 10) - parseInt(a.id, 10));
+    } else if (sortOption === "a-z") {
+      pokemons.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (sortOption === "z-a") {
+      pokemons.sort((a, b) => b.name.localeCompare(a.name));
+    }
+    // "smallest-first" is the default API order — no sort needed
 
     items.push(
       ...pokemons.map((p: Pokemon) => ({
@@ -56,6 +65,7 @@ export function usePokemonListData() {
     filteredPokemons,
     isSearching,
     hasActiveFilters,
+    sortOption,
   ]);
 
   return { listData, showFooterLoading };
