@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useRef, useState } from "react";
 import { useSharedValue, type SharedValue } from "react-native-reanimated";
 import { useLoadPokemons, type LoadPokemonsResult } from "@/features/load-pokemons";
+import { DEFAULT_FILTERS, type PokemonFilters } from "@/features/filter-pokemon-list";
 
 interface SearchTimeout {
   timeoutRef: ReturnType<typeof setTimeout>;
@@ -16,6 +17,8 @@ interface PokemonListContextValue {
   loadPokemonsActions: LoadPokemonsResult["actions"];
   searchValue: string;
   handleSearch: (text: string) => void;
+  filters: PokemonFilters;
+  applyFilters: (filters: PokemonFilters) => void;
 }
 
 const PokemonListContext = createContext<PokemonListContextValue | null>(null);
@@ -27,7 +30,8 @@ export function PokemonListProvider({ children }: { children: React.ReactNode })
 
   const [searchValue, setSearchValue] = useState("");
   const searchTimeoutRef = useRef<SearchTimeout | null>(null);
-  
+  const [filters, setFilters] = useState<PokemonFilters>(DEFAULT_FILTERS);
+
   const { state: loadPokemonsState, actions: loadPokemonsActions } = useLoadPokemons({
     searchQuery: searchValue,
   });
@@ -45,6 +49,10 @@ export function PokemonListProvider({ children }: { children: React.ReactNode })
     };
   }, []);
 
+  const applyFilters = useCallback((newFilters: PokemonFilters) => {
+    setFilters(newFilters);
+  }, []);
+
   return (
     <PokemonListContext.Provider
       value={{
@@ -56,6 +64,8 @@ export function PokemonListProvider({ children }: { children: React.ReactNode })
         loadPokemonsActions,
         searchValue,
         handleSearch,
+        filters,
+        applyFilters,
       }}
     >
       {children}

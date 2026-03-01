@@ -4,6 +4,7 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { StatusBar } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { queryClient, persister } from "@/shared/lib/query-client";
@@ -39,21 +40,24 @@ export default function RootLayout() {
       client={queryClient}
       persistOptions={{ persister }}
     >
-      <SafeAreaProvider>
-        <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
-        <Stack
-          screenOptions={{
-            headerShown: true,
-            headerShadowVisible: false,
-            headerTitle: "",
-            headerTransparent: true,
-            headerTintColor: "#FFFFFF",
-          }}
-        >
-          <Stack.Screen name="(pokemon-list)" options={{ headerShown: false }} />
-          <Stack.Screen name="(pokemon)" />
-        </Stack>
-      </SafeAreaProvider>
+      <GestureHandlerRootView style={{ flex: 1}}>
+        <SafeAreaProvider>
+          <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
+          <Stack
+            screenOptions={{
+              headerShown: true,
+              headerShadowVisible: false,
+              headerTitle: "",
+              headerTransparent: true,
+              headerTintColor: "#FFFFFF",
+              contentStyle: { backgroundColor: "#FFFFFF" },
+            }}
+          >
+            <Stack.Screen name="(pokemon-list)" options={{ headerShown: false }} />
+            <Stack.Screen name="(pokemon)" />
+          </Stack>
+        </SafeAreaProvider>
+      </GestureHandlerRootView>
     </PersistQueryClientProvider>
   );
 }

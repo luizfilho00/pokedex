@@ -1,47 +1,102 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Pokemon } from "@/entities/pokemon";
+import { useMemo } from "react";
 
-interface PokemonSearchActions {
-  onSearch: (name: string) => void;
+export interface PokemonFilters {
+  types: string[];
+  weaknesses: string[];
+  heights: string[];
+  weights: string[];
+  numberRange: [number, number];
 }
 
-export interface PokemonSearchResult {
-  actions: PokemonSearchActions;
+export const DEFAULT_FILTERS: PokemonFilters = {
+  types: [],
+  weaknesses: [],
+  heights: [],
+  weights: [],
+  numberRange: [1, 1100],
+};
+
+// Height thresholds in meters
+const SHORT_MAX = 0.8;
+const TALL_MIN = 1.5;
+
+// Weight thresholds in kg
+const LIGHT_MAX = 20;
+const HEAVY_MIN = 100;
+
+function matchesHeightFilter(height: number | undefined, heights: string[]): boolean {
+  if (heights.length === 0) return true;
+  if (height == null) return false;
+  return heights.some((h) => {
+    if (h === "short") return height <= SHORT_MAX;
+    if (h === "medium") return height > SHORT_MAX && height < TALL_MIN;
+    if (h === "tall") return height >= TALL_MIN;
+    return false;
+  });
 }
 
-interface SearchTermTimeout {
-  timeoutRef: number;
-  name: string;
+function matchesWeightFilter(weight: number | undefined, weights: string[]): boolean {
+  if (weights.length === 0) return true;
+  if (weight == null) return false;
+  return weights.some((w) => {
+    if (w === "light") return weight <= LIGHT_MAX;
+    if (w === "normal") return weight > LIGHT_MAX && weight < HEAVY_MIN;
+    if (w === "heavy") return weight >= HEAVY_MIN;
+    return false;
+  });
 }
 
-export function useFilterPokemonList() {
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
-  const timerRef = useRef<SearchTermTimeout | null>(null);
+interface UseFilterPokemonListParams {
+  pokemons: Pokemon[] | null;
+  filters: PokemonFilters;
+}
 
-  const onSearch = useCallback((name: string) => {
-    if (timerRef.current?.timeoutRef) {
-      clearTimeout(timerRef.current.timeoutRef);
-    }
-    const timeout = setTimeout(() => {
-      setDebouncedSearchTerm(name);
-    }, 300);
-    timerRef.current = {
-      timeoutRef: timeout,
-      name: name,
-    };
-  }, []);
+export function useFilterPokemonList({ pokemons, filters }: UseFilterPokemonListParams) {
+  const hasActiveFilters = useMemo(
+    () =>
+      filters.types.length > 0 ||
+      filters.weaknesses.length > 0 ||
+      filters.heights.length > 0 ||
+      filters.weights.length > 0 ||
+      filters.numberRange[0] !== DEFAULT_FILTERS.numberRange[0] ||
+      filters.numberRange[1] !== DEFAULT_FILTERS.numberRange[1],
+    [filters]
+  );
 
-  const actions = useMemo(() => ({ onSearch }), [onSearch]);
+  const filteredPokemons = useMemo(() => {
+    if (!pokemons) return null;
+    if (!hasActiveFilters) return pokemons;
 
-  useEffect(() => {
-    return () => {
-      if (timerRef.current?.timeoutRef) {
-        clearTimeout(timerRef.current.timeoutRef);
+    return pokemons.filter((p) => {
+      const id = parseInt(p.id, 10);
+      if (id < filters.numberRange[0] || id > filters.numberRange[1]) {
+        return false;
       }
-    };
-  }, []);
+      if (
+        filters.types.length > 0 &&
+        !p.types.some((t) => filters.types.includes(t.name))
+      ) {
+        return false;
+      }
+      if (
+        filters.weaknesses.length > 0 &&
+        !p.weakNesses?.some((w) => filters.weaknesses.includes(w.name))
+      ) {
+        return false;
+      }
+      if (!matchesHeightFilter(p.height, filters.heights)) {
+        return false;
+      }
+      if (!matchesWeightFilter(p.weight, filters.weights)) {
+        return false;
+      }
+      return true;
+    });
+  }, [pokemons, filters, hasActiveFilters]);
 
   return {
-    actions,
-    debouncedSearchTerm,
-  } as PokemonSearchResult & { debouncedSearchTerm: string };
+    filteredPokemons,
+    hasActiveFilters,
+  };
 }

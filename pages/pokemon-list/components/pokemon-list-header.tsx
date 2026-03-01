@@ -5,7 +5,11 @@ import { usePokemonListContext } from "../context/pokemon-list-context";
 import { useCallback } from "react";
 import type { LayoutChangeEvent } from "react-native";
 
-export const PokemonListHeader = () => {
+interface PokemonListHeaderProps {
+  onFilterPress?: () => void;
+}
+
+export const PokemonListHeader = ({ onFilterPress }: PokemonListHeaderProps) => {
   const insets = useSafeAreaInsets();
   const { headerHeight } = usePokemonListContext();
 
@@ -29,7 +33,7 @@ export const PokemonListHeader = () => {
         }}
       >
         <View style={{ marginTop: insets.top }}>
-          {/* <TopBarActions /> */}
+          <TopBarActions onFilterPress={onFilterPress} />
           <Text className="text-[32px] font-bold px-4 text-text-black">Pokédex</Text>
           <Text className="text-base font-normal px-4 pt-2.5 text-text-grey">
             Search for Pokémon by name or using the National Pokédex number.
@@ -40,12 +44,19 @@ export const PokemonListHeader = () => {
   );
 };
 
-function TopBarActions() {
+function TopBarActions({ onFilterPress }: { onFilterPress?: () => void }) {
   return (
     <View className="flex-row self-end px-4 gap-2">
-      <IconButton icon={require("@/assets/images/generation.png")} onPress={() => {}} />
-      <IconButton icon={require("@/assets/images/sort.png")} onPress={() => {}} />
-      <IconButton icon={require("@/assets/images/filter.png")} onPress={() => {}} />
+      <IconButton
+        icon={require("@/assets/images/generation.svg")}
+        size={20}
+        onPress={() => {}}
+      />
+      <IconButton icon={require("@/assets/images/sort.svg")} onPress={() => {}} />
+      <IconButton
+        icon={require("@/assets/images/filter.svg")}
+        onPress={onFilterPress ?? (() => {})}
+      />
     </View>
   );
 }
