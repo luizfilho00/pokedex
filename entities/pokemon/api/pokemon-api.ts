@@ -57,6 +57,11 @@ export async function fetchPokemon(id: string): Promise<Pokemon> {
       growthRate: data.training.growth_rate,
       baseExperience: data.training.base_experience,
       evolutionChain: mapEvolutionChain(data.evolution_chain),
+      gender: {
+        malePercent: data.about.gender.male_percent,
+        femalePercent: data.about.gender.female_percent,
+        isGenderless: data.about.gender.is_genderless,
+      },
       weakNesses: data.about.weaknesses.map((w) => mapResponseTypeToPokemonType(w)),
       locations: data.locations.map((loc) => ({
         id: String(loc.id),

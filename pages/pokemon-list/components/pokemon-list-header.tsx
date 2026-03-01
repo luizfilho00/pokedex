@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { usePokemonListContext } from "../context/pokemon-list-context";
 import { useCallback, useMemo } from "react";
 import type { LayoutChangeEvent } from "react-native";
+import { LightColors } from "@/constants/theme";
 
 interface PokemonListHeaderProps {
   onFilterPress?: () => void;
@@ -39,14 +40,12 @@ export const PokemonListHeader = ({ onFilterPress, onSortPress, onGenerationPres
       <ImageBackground
         source={require("@/assets/images/gradient_pokeball_half.png")}
         imageStyle={{
-          height: "80%",
-          width: "100%",
-          resizeMode: "contain",
+          resizeMode: "cover",
           position: "absolute",
-          top: -30,
+          top: 30,
         }}
       >
-        <View style={{ marginTop: insets.top }}>
+        <View style={{flex: 1, marginTop: insets.top }}>
           <TopBarActions
             onFilterPress={onFilterPress}
             onSortPress={onSortPress}
@@ -55,8 +54,8 @@ export const PokemonListHeader = ({ onFilterPress, onSortPress, onGenerationPres
             hasActiveSort={sortOption !== "smallest-first"}
             hasActiveGeneration={generation !== null}
           />
-          <Text className="text-[32px] font-bold px-4 text-text-black">Pokédex</Text>
-          <Text className="text-base font-normal px-4 pt-2.5 text-text-grey">
+          <Text className="flex-1 text-[32px] font-bold px-4 text-text-black">Pokédex</Text>
+          <Text className="flex-1 text-base font-normal px-4 pt-2.5 text-text-grey">
             Search for Pokémon by name or using the National Pokédex number.
           </Text>
         </View>

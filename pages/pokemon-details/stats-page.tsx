@@ -1,6 +1,7 @@
 import { Pokemon, getTypeDefenses } from "@/entities/pokemon";
 import { AppFonts } from "@/shared/ui/fonts";
-import { View, Text, Image, ScrollView } from "react-native";
+import { View, Text, ScrollView } from "react-native";
+import { Image } from "expo-image";
 
 const STAT_LABELS: Record<string, string> = {
   Hp: "HP",
@@ -145,12 +146,11 @@ export default function StatsPage({ pokemon }: { pokemon: Pokemon }) {
           <View key={type.name} className="items-center w-8 mb-2">
             <View
               className="w-7 h-7 rounded items-center justify-center"
-              style={{ backgroundColor: type.backgroundColor }}
+              style={{ backgroundColor: type.foregroundColor }}
             >
               <Image
                 source={type.icon}
-                className="w-3.5 h-3.5"
-                style={{ tintColor: "white" }}
+                style={{ tintColor: "white", width: 14, height: 14 }}
               />
             </View>
             <Text

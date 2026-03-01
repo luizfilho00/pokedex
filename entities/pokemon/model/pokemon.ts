@@ -28,7 +28,7 @@ export interface Pokemon {
   stats: PokemonStats[];
   description?: string;
   genus?: string;
-  genderRate?: number;
+  gender?: { malePercent: number; femalePercent: number; isGenderless: boolean };
   height?: number;
   weight?: number;
   catchRate?: number;

@@ -1,6 +1,13 @@
 import { TextColors } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
-import { Keyboard, Platform, Pressable, TextInput, View } from "react-native";
+import {
+  Keyboard,
+  Platform,
+  Pressable,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { Image } from "expo-image";
 import { useEffect, useState } from "react";
 
@@ -33,14 +40,13 @@ export function SearchBar({
     onSearch(text);
   };
   return (
-    <View
-      className={`flex-row items-center bg-white rounded-[10px] px-3 h-12 shadow-sm overflow-visible ${className ?? ""}`}
-      style={Platform.OS === "android" ? { elevation: 8 } : undefined}
-    >
-      <Image
-        source={require("@/assets/images/search.svg")}
-        style={{ tintColor: TextColors.grey, width: 20, height: 20 }}
-      />
+    <View className={`flex-row items-center bg-grey-light px-6 py-5 rounded-xl`}>
+      <View className="p-0">
+        <Image
+          source={require("@/assets/images/search.svg")}
+          style={{ tintColor: TextColors.grey, width: 16, height: 16 }}
+        />
+      </View>
       <TextInput
         className="flex-1 ml-3 text-base text-text-black"
         placeholder={placeholder}
@@ -48,21 +54,26 @@ export function SearchBar({
         onChangeText={handleChange}
         returnKeyType="search"
         style={{
-          includeFontPadding: false,
           paddingVertical: 0,
-          ...(Platform.OS === "ios" && {
-            paddingTop: 0,
-            paddingBottom: 0,
-            lineHeight: 20,
-            height: 20,
-          }),
+          includeFontPadding: false,
+          lineHeight: 0,
+          textAlignVertical: Platform.OS === "android" ? "top" : undefined,
         }}
         value={localValue}
       />
       {localValue.length > 0 && (
-        <Pressable onPress={handleClear} className="p-2">
-          <Ionicons name="close" size={20} color={TextColors.grey} />
-        </Pressable>
+        <TouchableOpacity
+          onPress={handleClear}
+          activeOpacity={0.6}
+          hitSlop={{
+            top: 10,
+            bottom: 10,
+            left: 10,
+            right: 10,
+          }}
+        >
+          <Ionicons name="close" size={16} color={TextColors.grey} />
+        </TouchableOpacity>
       )}
     </View>
   );

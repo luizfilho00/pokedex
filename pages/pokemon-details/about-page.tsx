@@ -3,14 +3,6 @@ import { AppFonts } from "@/shared/ui/fonts";
 import { View, Text, ScrollView } from "react-native";
 import { Image } from "expo-image";
 
-function formatGender(genderRate?: number) {
-  if (genderRate == null || genderRate === -1) {
-    return { isGenderless: true, femalePercent: 0, malePercent: 0 };
-  }
-  const femalePercent = (genderRate / 8) * 100;
-  return { isGenderless: false, femalePercent, malePercent: 100 - femalePercent };
-}
-
 function InfoRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <View className="flex-row items-center gap-6 mt-5">
@@ -45,7 +37,7 @@ function SectionHeader({ title, color }: { title: string; color: string }) {
 }
 
 export default function AboutPage({ pokemon }: { pokemon: Pokemon }) {
-  const { isGenderless, femalePercent, malePercent } = formatGender(pokemon.genderRate);
+  const { isGenderless, femalePercent, malePercent } = pokemon.gender ?? { isGenderless: true, femalePercent: 0, malePercent: 0 };
   const typeColor = pokemon.types[0].foregroundColor;
 
   return (

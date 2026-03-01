@@ -63,6 +63,11 @@ export function mapPokemonResponse(pokemonApiResponse: PokemonApiResponse): Poke
     stats: mapPokemonStats(pokemonApiResponse.stats.base, evYieldMap),
     height: pokemonApiResponse.about.height_m,
     weight: pokemonApiResponse.about.weight_kg,
+    gender: {
+      malePercent: pokemonApiResponse.about.gender.male_percent,
+      femalePercent: pokemonApiResponse.about.gender.female_percent,
+      isGenderless: pokemonApiResponse.about.gender.is_genderless,
+    },
   };
 }
 
