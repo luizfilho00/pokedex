@@ -1,6 +1,7 @@
 import { Pokemon } from "@/entities/pokemon";
 import { AppFonts } from "@/shared/ui/fonts";
-import { View, Text, ScrollView, Image } from "react-native";
+import { View, Text, ScrollView } from "react-native";
+import { Image } from "expo-image";
 
 function formatGender(genderRate?: number) {
   if (genderRate == null || genderRate === -1) {
@@ -59,27 +60,26 @@ export default function AboutPage({ pokemon }: { pokemon: Pokemon }) {
         </InfoRow>
         <InfoRow label="Height">
           <InfoValue>
-            {pokemon.height != null ? `${(pokemon.height / 10).toFixed(1)} m` : "—"}
+            {pokemon.height != null ? `${pokemon.height} m` : "—"}
           </InfoValue>
         </InfoRow>
         <InfoRow label="Weight">
           <InfoValue>
-            {pokemon.weight != null ? `${(pokemon.weight / 10).toFixed(1)} kg` : "—"}
+            {pokemon.weight != null ? `${pokemon.weight} kg` : "—"}
           </InfoValue>
         </InfoRow>
         {pokemon.weakNesses && pokemon.weakNesses.length > 0 && (
-          <InfoRow label="Weakness">
+          <InfoRow label="Weaknesses">
             <View className="flex-[2] flex-row gap-2">
               {pokemon.weakNesses.map((type) => (
                 <View
                   key={`${pokemon.id}-${type.name}`}
                   className="w-7 h-7 rounded items-center justify-center"
-                  style={{ backgroundColor: type.backgroundColor }}
+                  style={{ backgroundColor: type.foregroundColor }}
                 >
                   <Image
                     source={type.icon}
-                    className="w-3.5 h-3.5"
-                    style={{ tintColor: "white" }}
+                    style={{ tintColor: "white", width: 14, height: 14 }}
                   />
                 </View>
               ))}

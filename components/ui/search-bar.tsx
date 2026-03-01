@@ -1,6 +1,7 @@
 import { TextColors } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
-import { Image, Keyboard, Platform, Pressable, TextInput, View } from "react-native";
+import { Keyboard, Platform, Pressable, TextInput, View } from "react-native";
+import { Image } from "expo-image";
 import { useEffect, useState } from "react";
 
 interface SearchBarProps {
@@ -37,9 +38,8 @@ export function SearchBar({
       style={Platform.OS === "android" ? { elevation: 8 } : undefined}
     >
       <Image
-        source={require("@/assets/images/search.png")}
-        className="w-5 h-5"
-        style={{ tintColor: TextColors.grey }}
+        source={require("@/assets/images/search.svg")}
+        style={{ tintColor: TextColors.grey, width: 20, height: 20 }}
       />
       <TextInput
         className="flex-1 ml-3 text-base text-text-black"
