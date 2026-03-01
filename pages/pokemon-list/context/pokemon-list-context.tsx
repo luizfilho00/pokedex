@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useMemo, useRef, useState } from "react";
 import { useSharedValue, type SharedValue } from "react-native-reanimated";
 import { useLoadPokemons, type LoadPokemonsResult } from "@/features/load-pokemons";
-import { DEFAULT_FILTERS, type PokemonFilters } from "@/features/filter-pokemon-list";
+import { computeHasActiveFilters, DEFAULT_FILTERS, type PokemonFilters } from "@/features/filter-pokemon-list";
 import { type PokemonListParams } from "@/entities/pokemon/api/pokemon-api";
 import { type SortOption } from "../components/pokemon-sort-bottom-sheet";
 import { type Generation } from "../components/pokemon-generation-bottom-sheet";
@@ -70,7 +70,9 @@ interface PokemonListContextValue {
   searchValue: string;
   handleSearch: (text: string) => void;
   filters: PokemonFilters;
+  hasActiveFilters: boolean;
   applyFilters: (filters: PokemonFilters) => void;
+  clearFilters: () => void;
   sortOption: SortOption;
   setSortOption: (option: SortOption) => void;
   generation: Generation;
@@ -115,8 +117,14 @@ export function PokemonListProvider({ children }: { children: React.ReactNode })
     }, SEARCH_DEBOUNCE_MS);
   }, []);
 
+  const hasActiveFilters = useMemo(() => computeHasActiveFilters(filters), [filters]);
+
   const applyFilters = useCallback((newFilters: PokemonFilters) => {
     setFilters(newFilters);
+  }, []);
+
+  const clearFilters = useCallback(() => {
+    setFilters(DEFAULT_FILTERS);
   }, []);
 
   return (
@@ -132,7 +140,9 @@ export function PokemonListProvider({ children }: { children: React.ReactNode })
         searchValue,
         handleSearch,
         filters,
+        hasActiveFilters,
         applyFilters,
+        clearFilters,
         sortOption,
         setSortOption,
         generation,

@@ -10,6 +10,7 @@ import { usePokemonListContext } from "../context/pokemon-list-context";
 import { router } from "expo-router";
 import type { ListItem } from "../hooks/use-pokemon-list-data";
 import type { Pokemon } from "@/entities/pokemon";
+import { ClearFiltersPill } from "./clear-filters-pill";
 
 export const PokemonSearchBarItem = memo(function PokemonSearchBarItem() {
   const { isSticky, searchText, handleSearch } = usePokemonListContext();
@@ -29,6 +30,7 @@ export const PokemonSearchBarItem = memo(function PokemonSearchBarItem() {
         onSearch={handleSearch}
         placeholder="What Pokémon are you looking for?"
       />
+      <ClearFiltersPill />
     </Animated.View>
   );
 });
