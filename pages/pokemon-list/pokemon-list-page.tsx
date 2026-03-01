@@ -1,6 +1,7 @@
 import { FloatingScrollButton } from "@/components/ui/floating-scroll-button";
 import { Toast } from "@/components/ui/toast";
 import { LightColors } from "@/constants/theme";
+import { FilterBottomSheet } from "@/features/filter-pokemon-list";
 import { FlashList } from "@shopify/flash-list";
 import { useCallback } from "react";
 import { ActivityIndicator, View } from "react-native";
@@ -12,8 +13,14 @@ import { usePokemonListScroll } from "./hooks/use-pokemon-list-scroll";
 import { usePokemonListToast } from "./hooks/use-pokemon-list-toast";
 
 export default function PokemonListPage() {
-  const { showScrollButton, loadPokemonsState, loadPokemonsActions } =
-    usePokemonListContext();
+  const { 
+    showScrollButton, 
+    loadPokemonsState, 
+    loadPokemonsActions,
+    isFilterModalVisible,
+    setIsFilterModalVisible,
+    filterResult
+  } = usePokemonListContext();
   const { refList, handleScroll, scrollToTop } = usePokemonListScroll<ListItem>();
   const { listData, showFooterLoading } = usePokemonListData();
   const { toastMessage, dismissToast } = usePokemonListToast();
@@ -52,6 +59,13 @@ export default function PokemonListPage() {
       />
       <FloatingScrollButton visible={showScrollButton} onPress={scrollToTop} />
       <Toast message={toastMessage} onDismiss={dismissToast} />
+      <FilterBottomSheet 
+        visible={isFilterModalVisible}
+        onClose={() => setIsFilterModalVisible(false)}
+        filters={filterResult.filters}
+        onApply={filterResult.actions.applyFilters}
+        onReset={filterResult.actions.resetFilters}
+      />
     </View>
   );
 }

@@ -1,7 +1,7 @@
+import { useFilterPokemonList, type PokemonSearchResult } from "@/features/filter-pokemon-list";
+import { useLoadPokemons, type LoadPokemonsResult } from "@/features/load-pokemons";
 import { createContext, useCallback, useContext, useRef, useState } from "react";
 import { useSharedValue, type SharedValue } from "react-native-reanimated";
-import { useLoadPokemons, type LoadPokemonsResult } from "@/features/load-pokemons";
-
 interface SearchTimeout {
   timeoutRef: ReturnType<typeof setTimeout>;
   value: string;
@@ -16,6 +16,9 @@ interface PokemonListContextValue {
   loadPokemonsActions: LoadPokemonsResult["actions"];
   searchValue: string;
   handleSearch: (text: string) => void;
+  filterResult: PokemonSearchResult;
+  isFilterModalVisible: boolean;
+  setIsFilterModalVisible: (visible: boolean) => void;
 }
 
 const PokemonListContext = createContext<PokemonListContextValue | null>(null);
@@ -24,9 +27,12 @@ export function PokemonListProvider({ children }: { children: React.ReactNode })
   const headerHeight = useSharedValue(0);
   const isSticky = useSharedValue(false);
   const [showScrollButton, setShowScrollButton] = useState(false);
+  const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
 
   const [searchValue, setSearchValue] = useState("");
   const searchTimeoutRef = useRef<SearchTimeout | null>(null);
+  
+  const filterResult = useFilterPokemonList();
   
   const { state: loadPokemonsState, actions: loadPokemonsActions } = useLoadPokemons({
     searchQuery: searchValue,
@@ -56,6 +62,9 @@ export function PokemonListProvider({ children }: { children: React.ReactNode })
         loadPokemonsActions,
         searchValue,
         handleSearch,
+        filterResult,
+        isFilterModalVisible,
+        setIsFilterModalVisible,
       }}
     >
       {children}

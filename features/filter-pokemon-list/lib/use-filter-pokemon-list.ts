@@ -1,47 +1,42 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 
-interface PokemonSearchActions {
-  onSearch: (name: string) => void;
+export interface PokemonFilters {
+  types: string[];
+  weaknesses: string[];
+  heights: string[];
+  weights: string[];
+  numberRange: [number, number];
 }
+
+const DEFAULT_FILTERS: PokemonFilters = {
+  types: [],
+  weaknesses: [],
+  heights: [],
+  weights: [],
+  numberRange: [1, 1000],
+};
 
 export interface PokemonSearchResult {
-  actions: PokemonSearchActions;
+  filters: PokemonFilters;
+  actions: {
+    applyFilters: (newFilters: PokemonFilters) => void;
+    resetFilters: () => void;
+  };
 }
 
-interface SearchTermTimeout {
-  timeoutRef: number;
-  name: string;
-}
+export function useFilterPokemonList(): PokemonSearchResult {
+  const [filters, setFilters] = useState<PokemonFilters>(DEFAULT_FILTERS);
 
-export function useFilterPokemonList() {
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
-  const timerRef = useRef<SearchTermTimeout | null>(null);
-
-  const onSearch = useCallback((name: string) => {
-    if (timerRef.current?.timeoutRef) {
-      clearTimeout(timerRef.current.timeoutRef);
-    }
-    const timeout = setTimeout(() => {
-      setDebouncedSearchTerm(name);
-    }, 300);
-    timerRef.current = {
-      timeoutRef: timeout,
-      name: name,
-    };
+  const applyFilters = useCallback((newFilters: PokemonFilters) => {
+    setFilters(newFilters);
   }, []);
 
-  const actions = useMemo(() => ({ onSearch }), [onSearch]);
-
-  useEffect(() => {
-    return () => {
-      if (timerRef.current?.timeoutRef) {
-        clearTimeout(timerRef.current.timeoutRef);
-      }
-    };
+  const resetFilters = useCallback(() => {
+    setFilters(DEFAULT_FILTERS);
   }, []);
 
   return {
-    actions,
-    debouncedSearchTerm,
-  } as PokemonSearchResult & { debouncedSearchTerm: string };
+    filters,
+    actions: { applyFilters, resetFilters },
+  };
 }
