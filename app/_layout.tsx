@@ -1,3 +1,4 @@
+import "react-native-gesture-handler";
 import "../global.css";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
@@ -5,6 +6,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { StatusBar } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { queryClient, persister } from "@/shared/lib/query-client";
 
@@ -35,25 +37,27 @@ export default function RootLayout() {
   }
 
   return (
-    <PersistQueryClientProvider
-      client={queryClient}
-      persistOptions={{ persister }}
-    >
-      <SafeAreaProvider>
-        <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
-        <Stack
-          screenOptions={{
-            headerShown: true,
-            headerShadowVisible: false,
-            headerTitle: "",
-            headerTransparent: true,
-            headerTintColor: "#FFFFFF",
-          }}
-        >
-          <Stack.Screen name="(pokemon-list)" options={{ headerShown: false }} />
-          <Stack.Screen name="(pokemon)" />
-        </Stack>
-      </SafeAreaProvider>
-    </PersistQueryClientProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <PersistQueryClientProvider
+        client={queryClient}
+        persistOptions={{ persister }}
+      >
+        <SafeAreaProvider>
+          <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
+          <Stack
+            screenOptions={{
+              headerShown: true,
+              headerShadowVisible: false,
+              headerTitle: "",
+              headerTransparent: true,
+              headerTintColor: "#FFFFFF",
+            }}
+          >
+            <Stack.Screen name="(pokemon-list)" options={{ headerShown: false }} />
+            <Stack.Screen name="(pokemon)" />
+          </Stack>
+        </SafeAreaProvider>
+      </PersistQueryClientProvider>
+    </GestureHandlerRootView>
   );
 }

@@ -2,9 +2,10 @@ import { FloatingScrollButton } from "@/components/ui/floating-scroll-button";
 import { Toast } from "@/components/ui/toast";
 import { LightColors } from "@/constants/theme";
 import { FlashList } from "@shopify/flash-list";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { PokemonListHeader } from "./components/pokemon-list-header";
+import { PokemonFilterBottomSheet } from "./components/pokemon-filter-bottom-sheet";
 import { PokemonListItem } from "./components/pokemon-list-item";
 import { usePokemonListContext } from "./context/pokemon-list-context";
 import { usePokemonListData, type ListItem } from "./hooks/use-pokemon-list-data";
@@ -12,8 +13,15 @@ import { usePokemonListScroll } from "./hooks/use-pokemon-list-scroll";
 import { usePokemonListToast } from "./hooks/use-pokemon-list-toast";
 
 export default function PokemonListPage() {
-  const { showScrollButton, loadPokemonsState, loadPokemonsActions } =
-    usePokemonListContext();
+  const {
+    showScrollButton,
+    loadPokemonsState,
+    loadPokemonsActions,
+    isFilterSheetVisible,
+    closeFilterSheet,
+    filterDraft,
+    filterActions,
+  } = usePokemonListContext();
   const { refList, handleScroll, scrollToTop } = usePokemonListScroll<ListItem>();
   const { listData, showFooterLoading } = usePokemonListData();
   const { toastMessage, dismissToast } = usePokemonListToast();
@@ -21,6 +29,16 @@ export default function PokemonListPage() {
   const renderItem = useCallback(
     ({ item }: { item: ListItem }) => <PokemonListItem item={item} />,
     []);
+
+  const rangeBounds = useMemo<[number, number]>(() => {
+    const ids = (loadPokemonsState.pokemons ?? [])
+      .map((pokemon) => Number(pokemon.id))
+      .filter((value) => Number.isFinite(value));
+    if (ids.length === 0) {
+      return [1, 1025];
+    }
+    return [Math.min(...ids), Math.max(...ids)];
+  }, [loadPokemonsState.pokemons]);
 
   return (
     <View className="flex-1">
@@ -52,6 +70,19 @@ export default function PokemonListPage() {
       />
       <FloatingScrollButton visible={showScrollButton} onPress={scrollToTop} />
       <Toast message={toastMessage} onDismiss={dismissToast} />
+      <PokemonFilterBottomSheet
+        visible={isFilterSheetVisible}
+        onClose={closeFilterSheet}
+        onApply={filterActions.applyFilters}
+        onReset={filterActions.resetDraftFilters}
+        filters={filterDraft}
+        rangeBounds={rangeBounds}
+        onToggleType={filterActions.toggleType}
+        onToggleWeakness={filterActions.toggleWeakness}
+        onSetHeight={filterActions.setHeight}
+        onSetWeight={filterActions.setWeight}
+        onSetNumberRange={filterActions.setNumberRange}
+      />
     </View>
   );
 }

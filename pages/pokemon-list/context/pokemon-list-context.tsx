@@ -1,11 +1,12 @@
-import { createContext, useCallback, useContext, useRef, useState } from "react";
+import { createContext, useContext, useState } from "react";
 import { useSharedValue, type SharedValue } from "react-native-reanimated";
 import { useLoadPokemons, type LoadPokemonsResult } from "@/features/load-pokemons";
+import {
+  useFilterPokemonList,
+  type PokemonAdvancedFilters,
+} from "@/features/filter-pokemon-list";
 
-interface SearchTimeout {
-  timeoutRef: ReturnType<typeof setTimeout>;
-  value: string;
-}
+type PokemonFilterActions = ReturnType<typeof useFilterPokemonList>["actions"];
 
 interface PokemonListContextValue {
   headerHeight: SharedValue<number>;
@@ -16,6 +17,14 @@ interface PokemonListContextValue {
   loadPokemonsActions: LoadPokemonsResult["actions"];
   searchValue: string;
   handleSearch: (text: string) => void;
+  isFilterSheetVisible: boolean;
+  openFilterSheet: () => void;
+  closeFilterSheet: () => void;
+  filterDraft: PokemonAdvancedFilters;
+  appliedFilters: PokemonAdvancedFilters;
+  hasAppliedFilters: boolean;
+  defaultFilters: PokemonAdvancedFilters;
+  filterActions: PokemonFilterActions;
 }
 
 const PokemonListContext = createContext<PokemonListContextValue | null>(null);
@@ -24,26 +33,32 @@ export function PokemonListProvider({ children }: { children: React.ReactNode })
   const headerHeight = useSharedValue(0);
   const isSticky = useSharedValue(false);
   const [showScrollButton, setShowScrollButton] = useState(false);
+  const [isFilterSheetVisible, setIsFilterSheetVisible] = useState(false);
 
-  const [searchValue, setSearchValue] = useState("");
-  const searchTimeoutRef = useRef<SearchTimeout | null>(null);
-  
+  const {
+    actions: filterActions,
+    searchInput,
+    debouncedSearchTerm,
+    draftFilters,
+    appliedFilters,
+    hasAppliedFilters,
+    defaultFilters,
+  } = useFilterPokemonList();
+
   const { state: loadPokemonsState, actions: loadPokemonsActions } = useLoadPokemons({
-    searchQuery: searchValue,
+    searchQuery: debouncedSearchTerm,
   });
 
-  const handleSearch = useCallback((text: string) => {
-    if (searchTimeoutRef.current?.timeoutRef) {
-      clearTimeout(searchTimeoutRef.current.timeoutRef);
-    }
-    const timeout = setTimeout(() => {
-      setSearchValue(text);
-    }, 300);
-    searchTimeoutRef.current = {
-      timeoutRef: timeout,
-      value: text,
-    };
-  }, []);
+  const handleSearch = filterActions.onSearch;
+
+  const openFilterSheet = () => {
+    filterActions.syncDraftWithApplied();
+    setIsFilterSheetVisible(true);
+  };
+
+  const closeFilterSheet = () => {
+    setIsFilterSheetVisible(false);
+  };
 
   return (
     <PokemonListContext.Provider
@@ -54,8 +69,16 @@ export function PokemonListProvider({ children }: { children: React.ReactNode })
         setShowScrollButton,
         loadPokemonsState,
         loadPokemonsActions,
-        searchValue,
+        searchValue: searchInput,
         handleSearch,
+        isFilterSheetVisible,
+        openFilterSheet,
+        closeFilterSheet,
+        filterDraft: draftFilters,
+        appliedFilters,
+        hasAppliedFilters,
+        defaultFilters,
+        filterActions,
       }}
     >
       {children}
