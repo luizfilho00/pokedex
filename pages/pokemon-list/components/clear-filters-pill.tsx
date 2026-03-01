@@ -2,7 +2,7 @@ import { LightColors } from "@/constants/theme";
 import { computeHasActiveFilters } from "@/features/filter-pokemon-list";
 import { Ionicons } from "@expo/vector-icons";
 import { memo, useMemo } from "react";
-import { Pressable, Text, View } from "react-native";
+import { TouchableOpacity, Text, View } from "react-native";
 import { usePokemonListContext } from "../context/pokemon-list-context";
 
 export const ClearFiltersPill = memo(function ClearFiltersPill() {
@@ -14,9 +14,9 @@ export const ClearFiltersPill = memo(function ClearFiltersPill() {
 
   return (
     <View className="items-end mt-2">
-      <Pressable
+      <TouchableOpacity
         onPress={clearFilters}
-        className="active:opacity-60"
+        opacity={0.7}
         style={{
           flexDirection: "row",
           alignItems: "center",
@@ -31,7 +31,7 @@ export const ClearFiltersPill = memo(function ClearFiltersPill() {
         <Text style={{ color: "white", fontSize: 12, fontWeight: "600" }}>
           Clear filters
         </Text>
-      </Pressable>
+      </TouchableOpacity>
     </View>
   );
 });
