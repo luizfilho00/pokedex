@@ -2,6 +2,7 @@ import { Pokemon } from "@/entities/pokemon";
 import { AppFonts } from "@/shared/ui/fonts";
 import { View, Text, ScrollView } from "react-native";
 import { Image } from "expo-image";
+import { TcgCardList } from "./components/tcg-card-list";
 
 function InfoRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -106,6 +107,7 @@ export default function AboutPage({ pokemon }: { pokemon: Pokemon }) {
           </View>
         </InfoRow>
       </View>
+      <TcgCardList pokemonName={pokemon.name} typeColor={typeColor} />
       <View>
         <SectionHeader title="Training" color={typeColor} />
         <InfoRow label="EV Yield">

@@ -4,3 +4,8 @@ export const pokemonKeys = {
   details: () => [...pokemonKeys.all, 'detail'] as const,
   detail: (id: string) => [...pokemonKeys.details(), id] as const,
 };
+
+export const tcgCardKeys = {
+  all: ['tcg-cards'] as const,
+  byPokemon: (name: string) => [...tcgCardKeys.all, name] as const,
+};
