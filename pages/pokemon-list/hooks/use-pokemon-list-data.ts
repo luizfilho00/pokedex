@@ -12,9 +12,12 @@ export type ListItem =
   | { id: string; type: "pokemon"; data: Pokemon };
 
 export function usePokemonListData() {
-  const { loadPokemonsState, searchValue, filters, generation } = usePokemonListContext();
+  const { loadPokemonsState, searchValue, filters, generation, sortOption } = usePokemonListContext();
 
-  const hasActiveFilters = useMemo(() => computeHasActiveFilters(filters), [filters]);
+  const hasActiveFilters = useMemo(
+    () => computeHasActiveFilters(filters) || generation !== null || sortOption !== "smallest-first",
+    [filters, generation, sortOption],
+  );
   const isSearching = searchValue.length > 0;
   const showFooterLoading = loadPokemonsState.isNextPageLoading;
 

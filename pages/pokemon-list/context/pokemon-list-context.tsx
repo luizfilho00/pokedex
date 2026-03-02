@@ -125,6 +125,8 @@ export function PokemonListProvider({ children }: { children: React.ReactNode })
 
   const clearFilters = useCallback(() => {
     setFilters(DEFAULT_FILTERS);
+    setGeneration(null);
+    setSortOption("smallest-first");
   }, []);
 
   return (
