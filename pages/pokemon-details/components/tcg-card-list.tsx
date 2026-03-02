@@ -1,10 +1,12 @@
 import { TcgCard } from "@/entities/tcg-card";
 import { useLoadTcgCards } from "@/features/load-tcg-cards";
 import { AppFonts } from "@/shared/ui/fonts";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { ActivityIndicator, FlatList, Text, View } from "react-native";
 import { TcgCardThumbnail } from "./tcg-card-thumbnail";
 import { TcgCardFullscreenViewer } from "./tcg-card-fullscreen-viewer";
+
+const CARD_HEIGHT = 140;
 
 interface TcgCardListProps {
   pokemonName: string;
@@ -18,6 +20,12 @@ export const TcgCardList = React.memo(function TcgCardList({
   const { cards, loading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useLoadTcgCards({ pokemonName });
   const [selectedCard, setSelectedCard] = useState<TcgCard | null>(null);
+  const [failedIds, setFailedIds] = useState<ReadonlySet<string>>(new Set());
+
+  const visibleCards = useMemo(
+    () => cards?.filter((card) => !failedIds.has(card.id)) ?? null,
+    [cards, failedIds],
+  );
 
   const handleCardPress = useCallback((card: TcgCard) => {
     setSelectedCard(card);
@@ -27,11 +35,15 @@ export const TcgCardList = React.memo(function TcgCardList({
     setSelectedCard(null);
   }, []);
 
+  const handleCardError = useCallback((cardId: string) => {
+    setFailedIds((prev) => new Set([...prev, cardId]));
+  }, []);
+
   const renderItem = useCallback(
     ({ item }: { item: TcgCard }) => (
-      <TcgCardThumbnail card={item} onPress={handleCardPress} />
+      <TcgCardThumbnail card={item} onPress={handleCardPress} onError={handleCardError} />
     ),
-    [handleCardPress],
+    [handleCardPress, handleCardError],
   );
 
   const handleEndReached = useCallback(() => {
@@ -54,7 +66,7 @@ export const TcgCardList = React.memo(function TcgCardList({
     );
   }
 
-  if (!cards || cards.length === 0) {
+  if (!visibleCards || visibleCards.length === 0) {
     return null;
   }
 
@@ -68,7 +80,7 @@ export const TcgCardList = React.memo(function TcgCardList({
       </Text>
       <FlatList
         className="mt-3"
-        data={cards}
+        data={visibleCards}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
         horizontal
@@ -77,7 +89,9 @@ export const TcgCardList = React.memo(function TcgCardList({
         onEndReachedThreshold={0.5}
         ListFooterComponent={
           isFetchingNextPage ? (
-            <ActivityIndicator color={typeColor} style={{ marginHorizontal: 12 }} />
+            <View style={{ width: 60, height: CARD_HEIGHT, justifyContent: "center", alignItems: "center" }}>
+              <ActivityIndicator color={typeColor} />
+            </View>
           ) : null
         }
       />

@@ -8,7 +8,7 @@ interface UseLoadTcgCardsOptions {
   itemsPerPage?: number;
 }
 
-export function useLoadTcgCards({ pokemonName, itemsPerPage = 10 }: UseLoadTcgCardsOptions) {
+export function useLoadTcgCards({ pokemonName, itemsPerPage = 3 }: UseLoadTcgCardsOptions) {
   const query = useInfiniteQuery({
     queryKey: tcgCardKeys.byPokemon(pokemonName),
     queryFn: async ({ pageParam }) => {
@@ -25,10 +25,17 @@ export function useLoadTcgCards({ pokemonName, itemsPerPage = 10 }: UseLoadTcgCa
     enabled: !!pokemonName,
   });
 
-  const cards = useMemo(
-    () => query.data?.pages.flat() ?? null,
-    [query.data],
-  );
+  const cards = useMemo(() => {
+    const allCards = query.data?.pages.flat();
+    if (!allCards) return null;
+
+    const seenNames = new Set<string>();
+    return allCards.filter((card) => {
+      if (seenNames.has(card.name)) return false;
+      seenNames.add(card.name);
+      return true;
+    });
+  }, [query.data]);
 
   return {
     cards,

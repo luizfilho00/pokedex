@@ -17,7 +17,7 @@ export interface FetchTcgCardsParams {
 
 export async function fetchTcgCards(params: FetchTcgCardsParams): Promise<TcgCard[]> {
   const { pokemonName, page, itemsPerPage } = params;
-  const url = `${TCG_BASE_URL}/cards?name=${encodeURIComponent(pokemonName)}&page=${page}&itemsPerPage=${itemsPerPage}`;
+  const url = `${TCG_BASE_URL}/cards?name=${encodeURIComponent(pokemonName)}&pagination:page=${page}&pagination:itemsPerPage=${itemsPerPage}`;
 
   const response = await fetch(url);
   if (!response.ok) {

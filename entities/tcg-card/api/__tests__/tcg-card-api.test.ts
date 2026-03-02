@@ -39,7 +39,7 @@ describe("fetchTcgCards", () => {
     await fetchTcgCards({ pokemonName: "Pikachu", page: 1, itemsPerPage: 10 });
 
     expect(mockFetch).toHaveBeenCalledWith(
-      `${TCG_BASE_URL}/cards?name=Pikachu&page=1&itemsPerPage=10`,
+      `${TCG_BASE_URL}/cards?name=Pikachu&pagination:page=1&pagination:itemsPerPage=10`,
     );
   });
 
@@ -49,7 +49,7 @@ describe("fetchTcgCards", () => {
     await fetchTcgCards({ pokemonName: "Mr. Mime", page: 1, itemsPerPage: 10 });
 
     expect(mockFetch).toHaveBeenCalledWith(
-      `${TCG_BASE_URL}/cards?name=Mr.%20Mime&page=1&itemsPerPage=10`,
+      `${TCG_BASE_URL}/cards?name=Mr.%20Mime&pagination:page=1&pagination:itemsPerPage=10`,
     );
   });
 
@@ -111,7 +111,7 @@ describe("fetchTcgCards", () => {
     await fetchTcgCards({ pokemonName: "Pikachu", page: 3, itemsPerPage: 20 });
 
     expect(mockFetch).toHaveBeenCalledWith(
-      `${TCG_BASE_URL}/cards?name=Pikachu&page=3&itemsPerPage=20`,
+      `${TCG_BASE_URL}/cards?name=Pikachu&pagination:page=3&pagination:itemsPerPage=20`,
     );
   });
 });

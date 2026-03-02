@@ -20,7 +20,7 @@ describe("useLoadTcgCards", () => {
   const mockCard2: TcgCard = {
     id: "base1-58",
     localId: "58",
-    name: "Pikachu",
+    name: "Flying Pikachu",
     imageUrl: "https://assets.tcgdex.net/en/base/base1/58",
   };
 
@@ -76,7 +76,7 @@ describe("useLoadTcgCards", () => {
     expect(fetchTcgCards).not.toHaveBeenCalled();
   });
 
-  it("should detect end of items when page has fewer items than itemsPerPage", async () => {
+  it("should signal end of pages when page returns fewer items than itemsPerPage", async () => {
     fetchTcgCards.mockResolvedValueOnce([mockCard1]);
 
     const { result } = renderHook(
@@ -91,11 +91,26 @@ describe("useLoadTcgCards", () => {
     expect(result.current.hasNextPage).toBe(false);
   });
 
-  it("should have next page when page is full", async () => {
+  it("should signal end of pages when page returns empty array", async () => {
+    fetchTcgCards.mockResolvedValueOnce([]);
+
+    const { result } = renderHook(
+      () => useLoadTcgCards({ pokemonName: "Pikachu", itemsPerPage: 10 }),
+      { wrapper: createWrapper() },
+    );
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+
+    expect(result.current.hasNextPage).toBe(false);
+  });
+
+  it("should have next page only when page is full", async () => {
     const fullPage = Array.from({ length: 10 }, (_, i) => ({
       id: `card-${i}`,
       localId: String(i),
-      name: "Pikachu",
+      name: `Pikachu Variant ${i}`,
       imageUrl: `https://assets.tcgdex.net/en/swsh/swsh3/${i}`,
     }));
 
@@ -114,9 +129,22 @@ describe("useLoadTcgCards", () => {
   });
 
   it("should fetch next page and append cards", async () => {
+    const mockCard3: TcgCard = {
+      id: "swsh4-25",
+      localId: "25",
+      name: "Raichu",
+      imageUrl: "https://assets.tcgdex.net/en/swsh/swsh4/25",
+    };
+    const mockCard4: TcgCard = {
+      id: "base2-14",
+      localId: "14",
+      name: "Surfing Pikachu",
+      imageUrl: "https://assets.tcgdex.net/en/base/base2/14",
+    };
+
     fetchTcgCards
       .mockResolvedValueOnce([mockCard1, mockCard2])
-      .mockResolvedValueOnce([mockCard1, mockCard2]);
+      .mockResolvedValueOnce([mockCard3, mockCard4]);
 
     const { result } = renderHook(
       () => useLoadTcgCards({ pokemonName: "Pikachu", itemsPerPage: 2 }),
@@ -135,8 +163,8 @@ describe("useLoadTcgCards", () => {
       expect(result.current.cards).toEqual([
         mockCard1,
         mockCard2,
-        mockCard1,
-        mockCard2,
+        mockCard3,
+        mockCard4,
       ]);
     });
   });

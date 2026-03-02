@@ -36,11 +36,10 @@ export const TcgCardFullscreenViewer = React.memo(
         >
           <Pressable>
             <Image
-              source={{ uri: `${card.imageUrl}/high.png` }}
+              source={{ uri: `${card.imageUrl}/high.webp` }}
               style={{
                 width: cardWidth,
                 height: cardHeight,
-                borderRadius: 12,
               }}
               contentFit="contain"
               cachePolicy="memory-disk"
