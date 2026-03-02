@@ -1,19 +1,14 @@
 import { LightColors } from "@/constants/theme";
-import { computeHasActiveFilters } from "@/features/filter-pokemon-list";
 import { Ionicons } from "@expo/vector-icons";
-import { memo, useMemo } from "react";
-import { TouchableOpacity, Text, View } from "react-native";
+import { memo } from "react";
+import { Text, TouchableOpacity, View } from "react-native";
 import { usePokemonListContext } from "../context/pokemon-list-context";
 
 export const ClearFiltersPill = memo(function ClearFiltersPill() {
-  const { filters, clearFilters } = usePokemonListContext();
-
-  const hasActiveFilters = useMemo(() => computeHasActiveFilters(filters), [filters]);
-
-  if (!hasActiveFilters) return null;
+  const { clearFilters } = usePokemonListContext();
 
   return (
-    <View className="items-end mt-2">
+    <View className="items-end px-4 py-2 bg-white">
       <TouchableOpacity
         onPress={clearFilters}
         activeOpacity={0.6}

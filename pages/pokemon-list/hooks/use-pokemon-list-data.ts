@@ -5,6 +5,7 @@ import { usePokemonListContext } from "../context/pokemon-list-context";
 
 export type ListItem =
   | { id: string; type: "search" }
+  | { id: string; type: "clear-filters" }
   | { id: string; type: "empty" }
   | { id: string; type: "error" }
   | { id: string; type: "loading" }
@@ -19,6 +20,10 @@ export function usePokemonListData() {
 
   const listData: ListItem[] = useMemo(() => {
     const items: ListItem[] = [{ id: "search-bar", type: "search" }];
+
+    if (hasActiveFilters) {
+      items.push({ id: "clear-filters", type: "clear-filters" });
+    }
 
     if (loadPokemonsState.loading) {
       items.push({ id: "loading-state", type: "loading" });
