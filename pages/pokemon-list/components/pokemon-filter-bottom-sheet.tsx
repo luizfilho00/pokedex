@@ -6,7 +6,7 @@ import BottomSheet, {
   BottomSheetScrollView,
 } from "@gorhom/bottom-sheet";
 import { Image } from "expo-image";
-import React, { forwardRef, useCallback, useMemo, useState } from "react";
+import React, { forwardRef, useCallback, useEffect, useMemo, useState } from "react";
 import {
   Pressable,
   Text,
@@ -94,6 +94,10 @@ export const PokemonFilterBottomSheet = forwardRef<
 >(function PokemonFilterBottomSheet({ filters, onApply }, ref) {
   const insets = useSafeAreaInsets();
   const [localFilters, setLocalFilters] = useState<PokemonFilters>(filters);
+
+  useEffect(() => {
+    setLocalFilters(filters);
+  }, [filters]);
 
   const snapPoints = useMemo(() => ["47%", "90%"], []);
 
