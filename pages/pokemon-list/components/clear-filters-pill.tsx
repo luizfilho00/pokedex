@@ -16,7 +16,7 @@ export const ClearFiltersPill = memo(function ClearFiltersPill() {
     <View className="items-end mt-2">
       <TouchableOpacity
         onPress={clearFilters}
-        opacity={0.7}
+        activeOpacity={0.6}
         style={{
           flexDirection: "row",
           alignItems: "center",
