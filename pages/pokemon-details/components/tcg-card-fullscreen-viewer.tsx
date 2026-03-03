@@ -5,6 +5,7 @@ import { Image } from "expo-image";
 import React, { useCallback, useMemo, useRef } from "react";
 import {
   Modal,
+  Pressable,
   StyleSheet,
   useWindowDimensions,
   View,
@@ -13,16 +14,21 @@ import {
   Gesture,
   GestureDetector,
   GestureHandlerRootView,
-  TouchableOpacity,
 } from "react-native-gesture-handler";
 import Animated, {
-  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { scheduleOnRN } from "react-native-worklets";
 import { TcgCardActionsBottomSheet } from "./tcg-card-actions-bottom-sheet";
+
+const CARD_SCALE_RATIO = 0.85;
+const CARD_ASPECT_RATIO = 1.4;
+const CARD_MARGIN_TOP_OFFSET = 8;
+const LONG_PRESS_MIN_DURATION_MS = 300;
+const CARD_PRESS_SCALE = 0.95;
 
 interface TcgCardFullscreenViewerProps {
   card: TcgCard | null;
@@ -36,9 +42,9 @@ export const TcgCardFullscreenViewer = React.memo(
   }: TcgCardFullscreenViewerProps) {
     const { width } = useWindowDimensions();
     const insets = useSafeAreaInsets();
-    const cardWidth = width * 0.85;
-    const cardHeight = cardWidth * 1.4;
-    const marginTop = insets.top + 8;
+    const cardWidth = width * CARD_SCALE_RATIO;
+    const cardHeight = cardWidth * CARD_ASPECT_RATIO;
+    const marginTop = insets.top + CARD_MARGIN_TOP_OFFSET;
     const bottomSheetRef = useRef<BottomSheet>(null);
     const scale = useSharedValue(1);
 
@@ -51,34 +57,43 @@ export const TcgCardFullscreenViewer = React.memo(
     }, []);
 
     const backgroundCloseGesture = useMemo(
-      () => Gesture.Tap().onEnd(() => runOnJS(onClose)()),
+      () => Gesture.Tap().onEnd(() => scheduleOnRN(onClose)),
       [onClose],
+    );
+
+    const tapScaleGesture = useMemo(
+      () =>
+        Gesture.Tap()
+          .blocksExternalGesture(backgroundCloseGesture)
+          .onBegin(() => {
+            scale.value = withSpring(CARD_PRESS_SCALE);
+          })
+          .onFinalize(() => {
+            scale.value = withSpring(1);
+          }),
+      [backgroundCloseGesture],
     );
 
     const longPressGesture = useMemo(
       () =>
         Gesture.LongPress()
-          .minDuration(500)
+          .minDuration(LONG_PRESS_MIN_DURATION_MS)
+          .blocksExternalGesture(backgroundCloseGesture)
           .onBegin(() => {
-            scale.value = withSpring(0.95);
+            scale.value = withSpring(CARD_PRESS_SCALE);
           })
           .onStart(() => {
-            runOnJS(openBottomSheet)();
+            scheduleOnRN(openBottomSheet);
           })
           .onFinalize(() => {
             scale.value = withSpring(1);
           }),
-      [openBottomSheet],
-    );
-
-    const tapCloseGesture = useMemo(
-      () => Gesture.Tap().onEnd(() => runOnJS(onClose)()),
-      [onClose],
+      [openBottomSheet, backgroundCloseGesture],
     );
 
     const cardGesture = useMemo(
-      () => Gesture.Exclusive(longPressGesture, tapCloseGesture),
-      [longPressGesture, tapCloseGesture],
+      () => Gesture.Exclusive(longPressGesture, tapScaleGesture),
+      [longPressGesture, tapScaleGesture],
     );
 
     if (!card) return null;
@@ -129,17 +144,16 @@ export const TcgCardFullscreenViewer = React.memo(
                 </Animated.View>
               </GestureDetector>
             </View>
-            <TouchableOpacity
-              activeOpacity={0.6}
+            <Pressable
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               onPress={onClose}
-              className="absolute right-6 z-[4]"
+              className="absolute right-6 z-[4] active:opacity-60"
               style={{ top: marginTop }}
               accessibilityRole="button"
               accessibilityLabel="Close fullscreen viewer"
             >
               <Ionicons name="close" color="white" size={32} />
-            </TouchableOpacity>
+            </Pressable>
             <TcgCardActionsBottomSheet
               ref={bottomSheetRef}
               imageUrl={saveUrl}
