@@ -3,7 +3,7 @@ import { useLoadTcgCards } from "@/features/load-tcg-cards";
 import { AppFonts } from "@/shared/ui/fonts";
 import React, { useCallback, useMemo, useState } from "react";
 import { ActivityIndicator, FlatList, Text, View } from "react-native";
-import { NativeViewGestureHandler } from "react-native-gesture-handler";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { TcgCardThumbnail } from "./tcg-card-thumbnail";
 import { TcgCardFullscreenViewer } from "./tcg-card-fullscreen-viewer";
 
@@ -71,6 +71,8 @@ export const TcgCardList = React.memo(function TcgCardList({
     [],
   );
 
+  const listGesture = useMemo(() => Gesture.Native(), []);
+
   const handleEndReached = useCallback(() => {
     if (hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
@@ -92,7 +94,7 @@ export const TcgCardList = React.memo(function TcgCardList({
       {loading ? (
         <ActivityIndicator className="mt-4" color={typeColor} />
       ) : (
-        <NativeViewGestureHandler disallowInterruption>
+        <GestureDetector gesture={listGesture}>
           <FlatList
             className="mt-3"
             data={visibleCards}
@@ -111,7 +113,7 @@ export const TcgCardList = React.memo(function TcgCardList({
               ) : null
             }
           />
-        </NativeViewGestureHandler>
+        </GestureDetector>
       )}
       <TcgCardFullscreenViewer
         card={selectedCard}
