@@ -26,8 +26,6 @@ export const TcgCardFullscreenViewer = React.memo(function TcgCardFullscreenView
   const cardHeight = cardWidth * 1.4;
   const marginTop = insets.top + 8;
 
-  console.log("insetsTop", insets.top);
-
   if (!card) return null;
 
   return (
