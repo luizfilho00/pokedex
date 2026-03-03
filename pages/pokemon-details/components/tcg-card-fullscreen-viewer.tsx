@@ -3,16 +3,22 @@ import { Ionicons } from "@expo/vector-icons";
 import BottomSheet from "@gorhom/bottom-sheet";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { Image } from "expo-image";
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useMemo, useRef } from "react";
 import {
   Modal,
   Pressable,
+  StyleSheet,
   TouchableOpacity,
   useWindowDimensions,
   View,
 } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
+import {
+  Gesture,
+  GestureDetector,
+  GestureHandlerRootView,
+} from "react-native-gesture-handler";
 import Animated, {
+  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -37,21 +43,30 @@ export const TcgCardFullscreenViewer = React.memo(
     const marginTop = insets.top + 8;
     const bottomSheetRef = useRef<BottomSheet>(null);
     const scale = useSharedValue(1);
+
     const animatedStyle = useAnimatedStyle(() => ({
       transform: [{ scale: scale.value }],
     }));
 
-    const handlePressIn = useCallback(() => {
-      scale.value = withSpring(0.95);
-    }, [scale]);
-
-    const handlePressOut = useCallback(() => {
-      scale.value = withSpring(1);
-    }, [scale]);
-
-    const handleLongPress = useCallback(() => {
+    const openBottomSheet = useCallback(() => {
       bottomSheetRef.current?.expand();
     }, []);
+
+    const longPressGesture = useMemo(
+      () =>
+        Gesture.LongPress()
+          .minDuration(500)
+          .onBegin(() => {
+            scale.value = withSpring(0.95);
+          })
+          .onStart(() => {
+            runOnJS(openBottomSheet)();
+          })
+          .onFinalize(() => {
+            scale.value = withSpring(1);
+          }),
+      [scale, openBottomSheet],
+    );
 
     if (!card) return null;
 
@@ -69,7 +84,28 @@ export const TcgCardFullscreenViewer = React.memo(
       >
         <GestureHandlerRootView className="flex-1">
           <BottomSheetModalProvider>
-            <View className="relative flex-1 bg-black/85">
+            <View className="flex-1 bg-black/85">
+              <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
+              <View
+                className="flex-1 justify-center items-center"
+                pointerEvents="box-none"
+              >
+                <GestureDetector gesture={longPressGesture}>
+                  <Animated.View style={animatedStyle}>
+                    <Image
+                      source={{ uri: imageUrl }}
+                      style={{
+                        width: cardWidth,
+                        height: cardHeight,
+                      }}
+                      contentFit="contain"
+                      cachePolicy="memory-disk"
+                      accessibilityRole="image"
+                      accessibilityLabel={card.name}
+                    />
+                  </Animated.View>
+                </GestureDetector>
+              </View>
               <TouchableOpacity
                 activeOpacity={0.6}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
@@ -81,32 +117,6 @@ export const TcgCardFullscreenViewer = React.memo(
               >
                 <Ionicons name="close" color="white" size={32} />
               </TouchableOpacity>
-              <Pressable
-                className="flex-1 justify-center items-center"
-                onPress={onClose}
-                accessibilityRole="button"
-                accessibilityLabel="Close"
-              >
-                <Pressable
-                  onPressIn={handlePressIn}
-                  onPressOut={handlePressOut}
-                  onLongPress={handleLongPress}
-                  accessibilityRole="image"
-                  accessibilityLabel={card.name}
-                >
-                  <Animated.View style={animatedStyle}>
-                    <Image
-                      source={{ uri: imageUrl }}
-                      style={{
-                        width: cardWidth,
-                        height: cardHeight,
-                      }}
-                      contentFit="contain"
-                      cachePolicy="memory-disk"
-                    />
-                  </Animated.View>
-                </Pressable>
-              </Pressable>
               <TcgCardActionsBottomSheet
                 ref={bottomSheetRef}
                 imageUrl={saveUrl}
