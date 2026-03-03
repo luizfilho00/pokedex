@@ -141,7 +141,7 @@ export default function StatsPage({ pokemon }: { pokemon: Pokemon }) {
         The effectiveness of each type on {pokemon.name}.
       </Text>
 
-      <View className="flex-row flex-wrap mt-4 gap-2">
+      <View className="flex-row flex-wrap mt-4 mb-6 gap-2">
         {defenses.map(({ type, multiplier }) => (
           <View key={type.name} className="items-center w-8 mb-2">
             <View

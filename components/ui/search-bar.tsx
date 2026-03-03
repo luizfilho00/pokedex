@@ -3,11 +3,13 @@ import { Ionicons } from "@expo/vector-icons";
 import {
   Keyboard,
   Platform,
+  Pressable,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
 import { Image } from "expo-image";
+import { useRef } from "react";
 
 interface SearchBarProps {
   value?: string;
@@ -22,13 +24,17 @@ export function SearchBar({
   placeholder = "Search Pokémon",
   className,
 }: SearchBarProps) {
+  const textInputRef = useRef<TextInput>(null);
   const handleClear = () => {
     Keyboard.dismiss();
     onSearch("");
   };
 
   return (
-    <View className={`flex-row items-center bg-grey-light px-6 py-5 rounded-xl`}>
+    <Pressable
+      className={`flex-row items-center bg-grey-light px-6 py-5 rounded-xl`}
+      onPress={() => textInputRef.current?.focus()}
+    >
       <View className="p-0">
         <Image
           source={require("@/assets/images/search.svg")}
@@ -36,6 +42,7 @@ export function SearchBar({
         />
       </View>
       <TextInput
+        ref={textInputRef}
         className="flex-1 ml-3 text-base text-text-black"
         placeholder={placeholder}
         placeholderTextColor={TextColors.grey}
@@ -63,6 +70,6 @@ export function SearchBar({
           <Ionicons name="close" size={16} color={TextColors.grey} />
         </TouchableOpacity>
       )}
-    </View>
+    </Pressable>
   );
 }

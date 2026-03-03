@@ -139,7 +139,7 @@ export default function AboutPage({ pokemon }: { pokemon: Pokemon }) {
         </InfoRow>
       </View>
       {pokemon.locations && pokemon.locations.length > 0 && (
-        <View>
+        <View className="pb-6" >
           <SectionHeader title="Location" color={typeColor} />
           {pokemon.locations.map((loc) => (
             <InfoRow key={loc.id} label={loc.id}>
