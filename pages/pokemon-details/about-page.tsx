@@ -50,7 +50,7 @@ export default function AboutPage({ pokemon }: { pokemon: Pokemon }) {
   return (
     <ScrollView
       className="bg-white rounded-t-[30px] flex-1 flex-col p-8"
-      contentContainerStyle={{ paddingBottom: insets.bottom + 16 }}
+      contentContainerStyle={{ paddingBottom: insets.bottom + 32 }}
     >
       <Text className="text-base text-text-grey" style={{ fontFamily: AppFonts.regular }}>
         {pokemon.description ?? ""}
