@@ -3,6 +3,7 @@ import { AppFonts } from "@/shared/ui/fonts";
 import { View, Text, ScrollView } from "react-native";
 import { Image } from "expo-image";
 import { TcgCardList } from "./components/tcg-card-list";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 function InfoRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -38,11 +39,19 @@ function SectionHeader({ title, color }: { title: string; color: string }) {
 }
 
 export default function AboutPage({ pokemon }: { pokemon: Pokemon }) {
-  const { isGenderless, femalePercent, malePercent } = pokemon.gender ?? { isGenderless: true, femalePercent: 0, malePercent: 0 };
+  const { isGenderless, femalePercent, malePercent } = pokemon.gender ?? {
+    isGenderless: true,
+    femalePercent: 0,
+    malePercent: 0,
+  };
   const typeColor = pokemon.types[0].foregroundColor;
+  const insets = useSafeAreaInsets();
 
   return (
-    <ScrollView className="bg-white rounded-t-[30px] flex-1 flex-col p-8">
+    <ScrollView
+      className="bg-white rounded-t-[30px] flex-1 flex-col p-8"
+      contentContainerStyle={{ paddingBottom: insets.bottom + 16 }}
+    >
       <Text className="text-base text-text-grey" style={{ fontFamily: AppFonts.regular }}>
         {pokemon.description ?? ""}
       </Text>
@@ -52,14 +61,10 @@ export default function AboutPage({ pokemon }: { pokemon: Pokemon }) {
           <InfoValue>{pokemon.genus ?? ""}</InfoValue>
         </InfoRow>
         <InfoRow label="Height">
-          <InfoValue>
-            {pokemon.height != null ? `${pokemon.height} m` : "—"}
-          </InfoValue>
+          <InfoValue>{pokemon.height != null ? `${pokemon.height} m` : "—"}</InfoValue>
         </InfoRow>
         <InfoRow label="Weight">
-          <InfoValue>
-            {pokemon.weight != null ? `${pokemon.weight} kg` : "—"}
-          </InfoValue>
+          <InfoValue>{pokemon.weight != null ? `${pokemon.weight} kg` : "—"}</InfoValue>
         </InfoRow>
         {pokemon.weakNesses && pokemon.weakNesses.length > 0 && (
           <InfoRow label="Weaknesses">
@@ -139,7 +144,7 @@ export default function AboutPage({ pokemon }: { pokemon: Pokemon }) {
         </InfoRow>
       </View>
       {pokemon.locations && pokemon.locations.length > 0 && (
-        <View className="pb-6" >
+        <View>
           <SectionHeader title="Location" color={typeColor} />
           {pokemon.locations.map((loc) => (
             <InfoRow key={loc.id} label={loc.id}>

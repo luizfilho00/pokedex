@@ -2,6 +2,7 @@ import { Pokemon, getTypeDefenses } from "@/entities/pokemon";
 import { AppFonts } from "@/shared/ui/fonts";
 import { View, Text, ScrollView } from "react-native";
 import { Image } from "expo-image";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const STAT_LABELS: Record<string, string> = {
   Hp: "HP",
@@ -34,9 +35,13 @@ export default function StatsPage({ pokemon }: { pokemon: Pokemon }) {
   const primaryColor = pokemon.types[0].foregroundColor;
   const total = pokemon.stats.reduce((sum, s) => sum + s.baseStat, 0);
   const defenses = getTypeDefenses(pokemon.types);
+  const insets = useSafeAreaInsets();
 
   return (
-    <ScrollView className="bg-white rounded-t-[30px] flex-1 p-8">
+    <ScrollView
+      className="bg-white rounded-t-[30px] flex-1 p-8"
+      contentContainerStyle={{ paddingBottom: insets.bottom + 16 }}
+    >
       <Text
         className="text-base"
         style={{ fontFamily: AppFonts.bold, color: primaryColor }}
@@ -141,7 +146,7 @@ export default function StatsPage({ pokemon }: { pokemon: Pokemon }) {
         The effectiveness of each type on {pokemon.name}.
       </Text>
 
-      <View className="flex-row flex-wrap mt-4 mb-6 gap-2">
+      <View className="flex-row flex-wrap my-4 gap-2">
         {defenses.map(({ type, multiplier }) => (
           <View key={type.name} className="items-center w-8 mb-2">
             <View
