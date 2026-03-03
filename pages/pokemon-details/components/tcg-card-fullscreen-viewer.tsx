@@ -1,6 +1,6 @@
 import { TcgCard } from "@/entities/tcg-card";
 import { Ionicons } from "@expo/vector-icons";
-import BottomSheet, { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import BottomSheet from "@gorhom/bottom-sheet";
 import { Image } from "expo-image";
 import React, { useCallback, useMemo, useRef } from "react";
 import {
@@ -96,58 +96,56 @@ export const TcgCardFullscreenViewer = React.memo(
         statusBarTranslucent
       >
         <GestureHandlerRootView className="flex-1">
-          <BottomSheetModalProvider>
-            <View className="flex-1 bg-black/85">
-              <GestureDetector gesture={backgroundCloseGesture}>
-                <View
-                  style={StyleSheet.absoluteFill}
-                  accessible
-                  accessibilityRole="button"
-                  accessibilityLabel="Close fullscreen viewer"
-                />
-              </GestureDetector>
+          <View className="flex-1 bg-black/85">
+            <GestureDetector gesture={backgroundCloseGesture}>
               <View
-                className="flex-1 justify-center items-center"
-                pointerEvents="box-none"
-              >
-                <GestureDetector gesture={cardGesture}>
-                  <Animated.View
-                    style={animatedStyle}
-                    accessible
-                    accessibilityRole="image"
-                    accessibilityLabel={card.name}
-                    accessibilityHint="Long press to save to gallery"
-                  >
-                    <Image
-                      source={{ uri: imageUrl }}
-                      style={{
-                        width: cardWidth,
-                        height: cardHeight,
-                      }}
-                      contentFit="contain"
-                      cachePolicy="memory-disk"
-                    />
-                  </Animated.View>
-                </GestureDetector>
-              </View>
-              <TouchableOpacity
-                activeOpacity={0.6}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                onPress={onClose}
-                className="absolute right-6 z-[4]"
-                style={{ top: marginTop }}
+                style={StyleSheet.absoluteFill}
+                accessible
                 accessibilityRole="button"
                 accessibilityLabel="Close fullscreen viewer"
-              >
-                <Ionicons name="close" color="white" size={32} />
-              </TouchableOpacity>
-              <TcgCardActionsBottomSheet
-                ref={bottomSheetRef}
-                imageUrl={saveUrl}
-                filename={filename}
               />
+            </GestureDetector>
+            <View
+              className="flex-1 justify-center items-center"
+              pointerEvents="box-none"
+            >
+              <GestureDetector gesture={cardGesture}>
+                <Animated.View
+                  style={animatedStyle}
+                  accessible
+                  accessibilityRole="image"
+                  accessibilityLabel={card.name}
+                  accessibilityHint="Long press to save to gallery"
+                >
+                  <Image
+                    source={{ uri: imageUrl }}
+                    style={{
+                      width: cardWidth,
+                      height: cardHeight,
+                    }}
+                    contentFit="contain"
+                    cachePolicy="memory-disk"
+                  />
+                </Animated.View>
+              </GestureDetector>
             </View>
-          </BottomSheetModalProvider>
+            <TouchableOpacity
+              activeOpacity={0.6}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              onPress={onClose}
+              className="absolute right-6 z-[4]"
+              style={{ top: marginTop }}
+              accessibilityRole="button"
+              accessibilityLabel="Close fullscreen viewer"
+            >
+              <Ionicons name="close" color="white" size={32} />
+            </TouchableOpacity>
+            <TcgCardActionsBottomSheet
+              ref={bottomSheetRef}
+              imageUrl={saveUrl}
+              filename={filename}
+            />
+          </View>
         </GestureHandlerRootView>
       </Modal>
     );
