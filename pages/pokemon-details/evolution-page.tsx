@@ -4,6 +4,7 @@ import { AppFonts } from "@/shared/ui/fonts";
 import { Image as ExpoImage } from "expo-image";
 import { useRouter } from "expo-router";
 import { View, Text, ScrollView, Pressable } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -132,12 +133,13 @@ function EvolutionTree({
 export default function EvolutionPage({ pokemon }: { pokemon: Pokemon }) {
   const chain = pokemon.evolutionChain ?? [];
   const typeColor = pokemon.types[0].foregroundColor;
+  const insets = useSafeAreaInsets();
 
   if (chain.length === 0 || (chain.length === 1 && (chain[0].evolvesTo?.length ?? 0) === 0)) {
     return (
       <ScrollView
         className="bg-white rounded-t-[30px] flex-1"
-        contentContainerStyle={{ padding: 32 }}
+        contentContainerStyle={{ padding: 32, paddingBottom: 32 + insets.bottom }}
       >
         <Text
           className="text-base mb-6"
@@ -158,7 +160,7 @@ export default function EvolutionPage({ pokemon }: { pokemon: Pokemon }) {
   return (
     <ScrollView
       className="bg-white rounded-t-[30px] flex-1"
-      contentContainerStyle={{ padding: 32 }}
+      contentContainerStyle={{ padding: 32, paddingBottom: 32 + insets.bottom }}
     >
       <Text
         className="text-base mb-6"

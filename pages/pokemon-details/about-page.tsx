@@ -2,8 +2,8 @@ import { Pokemon } from "@/entities/pokemon";
 import { AppFonts } from "@/shared/ui/fonts";
 import { View, Text, ScrollView } from "react-native";
 import { Image } from "expo-image";
-import { TcgCardList } from "./components/tcg-card-list";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { TcgCardList } from "./components/tcg-card-list";
 
 function InfoRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
