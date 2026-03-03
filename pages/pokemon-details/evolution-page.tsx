@@ -3,8 +3,7 @@ import { EvolutionStage } from "@/entities/pokemon/model/pokemon";
 import { AppFonts } from "@/shared/ui/fonts";
 import { Image as ExpoImage } from "expo-image";
 import { useRouter } from "expo-router";
-import { useState } from "react";
-import { View, Text, ScrollView, Pressable, Image } from "react-native";
+import { View, Text, ScrollView, Pressable } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -17,7 +16,6 @@ function PokemonStageView({ stage }: { stage: EvolutionStage }) {
   const style = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
   }));
-  const [loadError, setLoadError] = useState(false);
 
   const handlePressIn = () => {
     scale.value = withSpring(0.85);

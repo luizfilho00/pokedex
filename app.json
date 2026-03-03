@@ -41,7 +41,15 @@
           }
         }
       ],
-      "expo-font"
+      "expo-font",
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow Pokédex to save card images to your photo library.",
+          "savePhotosPermission": "Allow Pokédex to save card images to your photo library.",
+          "isAccessMediaLocationEnabled": false
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
