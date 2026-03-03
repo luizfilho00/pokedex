@@ -8,10 +8,16 @@ export const ClearFiltersPill = memo(function ClearFiltersPill() {
   const { clearFilters } = usePokemonListContext();
 
   return (
-    <View className="items-end px-4 py-2 bg-white">
+    <View className="justify-items-center items-end px-4 py-2 bg-white">
       <TouchableOpacity
         onPress={clearFilters}
         activeOpacity={0.6}
+        hitSlop={{
+          top: 10,
+          bottom: 10,
+          left: 10,
+          right: 10,
+        }}
         style={{
           flexDirection: "row",
           alignItems: "center",
