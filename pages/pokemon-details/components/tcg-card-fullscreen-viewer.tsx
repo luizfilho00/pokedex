@@ -6,7 +6,6 @@ import { Image } from "expo-image";
 import React, { useCallback, useMemo, useRef } from "react";
 import {
   Modal,
-  Pressable,
   StyleSheet,
   TouchableOpacity,
   useWindowDimensions,
@@ -52,6 +51,11 @@ export const TcgCardFullscreenViewer = React.memo(
       bottomSheetRef.current?.expand();
     }, []);
 
+    const closeGesture = useMemo(
+      () => Gesture.Tap().onEnd(() => runOnJS(onClose)()),
+      [onClose],
+    );
+
     const longPressGesture = useMemo(
       () =>
         Gesture.LongPress()
@@ -85,7 +89,9 @@ export const TcgCardFullscreenViewer = React.memo(
         <GestureHandlerRootView className="flex-1">
           <BottomSheetModalProvider>
             <View className="flex-1 bg-black/85">
-              <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
+              <GestureDetector gesture={closeGesture}>
+                <View style={StyleSheet.absoluteFill} />
+              </GestureDetector>
               <View
                 className="flex-1 justify-center items-center"
                 pointerEvents="box-none"
