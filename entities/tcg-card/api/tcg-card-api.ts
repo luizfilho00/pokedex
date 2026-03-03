@@ -6,7 +6,7 @@ interface TcgCardApiResponse {
   id: string;
   localId: string;
   name: string;
-  image: string;
+  image?: string;
 }
 
 export interface FetchTcgCardsParams {
@@ -30,10 +30,12 @@ export async function fetchTcgCards(params: FetchTcgCardsParams): Promise<TcgCar
     return [];
   }
 
-  return data.map((card) => ({
-    id: card.id,
-    localId: card.localId,
-    name: card.name,
-    imageUrl: card.image,
-  }));
+  return data
+    .filter((card): card is TcgCardApiResponse & { image: string } => !!card.image)
+    .map((card) => ({
+      id: card.id,
+      localId: card.localId,
+      name: card.name,
+      imageUrl: card.image,
+    }));
 }

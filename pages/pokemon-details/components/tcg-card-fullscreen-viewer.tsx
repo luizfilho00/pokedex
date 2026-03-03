@@ -5,14 +5,12 @@ import { Modal, Pressable, useWindowDimensions } from "react-native";
 
 interface TcgCardFullscreenViewerProps {
   card: TcgCard | null;
-  visible: boolean;
   onClose: () => void;
 }
 
 export const TcgCardFullscreenViewer = React.memo(
   function TcgCardFullscreenViewer({
     card,
-    visible,
     onClose,
   }: TcgCardFullscreenViewerProps) {
     const { width } = useWindowDimensions();
@@ -23,7 +21,7 @@ export const TcgCardFullscreenViewer = React.memo(
 
     return (
       <Modal
-        visible={visible}
+        visible
         transparent
         animationType="fade"
         onRequestClose={onClose}

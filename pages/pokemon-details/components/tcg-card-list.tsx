@@ -6,7 +6,17 @@ import { ActivityIndicator, FlatList, Text, View } from "react-native";
 import { TcgCardThumbnail } from "./tcg-card-thumbnail";
 import { TcgCardFullscreenViewer } from "./tcg-card-fullscreen-viewer";
 
+const CARD_WIDTH = 100;
 const CARD_HEIGHT = 140;
+const CARD_MARGIN_RIGHT = 12;
+const CARD_TOTAL_WIDTH = CARD_WIDTH + CARD_MARGIN_RIGHT;
+
+const footerStyle = {
+  width: 60,
+  height: CARD_HEIGHT,
+  justifyContent: "center" as const,
+  alignItems: "center" as const,
+};
 
 interface TcgCardListProps {
   pokemonName: string;
@@ -36,7 +46,12 @@ export const TcgCardList = React.memo(function TcgCardList({
   }, []);
 
   const handleCardError = useCallback((cardId: string) => {
-    setFailedIds((prev) => new Set([...prev, cardId]));
+    setFailedIds((prev) => {
+      if (prev.has(cardId)) return prev;
+      const next = new Set(prev);
+      next.add(cardId);
+      return next;
+    });
   }, []);
 
   const renderItem = useCallback(
@@ -46,27 +61,22 @@ export const TcgCardList = React.memo(function TcgCardList({
     [handleCardPress, handleCardError],
   );
 
+  const getItemLayout = useCallback(
+    (_data: ArrayLike<TcgCard> | null | undefined, index: number) => ({
+      length: CARD_TOTAL_WIDTH,
+      offset: CARD_TOTAL_WIDTH * index,
+      index,
+    }),
+    [],
+  );
+
   const handleEndReached = useCallback(() => {
     if (hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  if (loading) {
-    return (
-      <View>
-        <Text
-          className="mt-[30px] text-base"
-          style={{ fontFamily: AppFonts.bold, color: typeColor }}
-        >
-          TCG Cards
-        </Text>
-        <ActivityIndicator className="mt-4" color={typeColor} />
-      </View>
-    );
-  }
-
-  if (!visibleCards || visibleCards.length === 0) {
+  if (!loading && (!visibleCards || visibleCards.length === 0)) {
     return null;
   }
 
@@ -78,26 +88,30 @@ export const TcgCardList = React.memo(function TcgCardList({
       >
         TCG Cards
       </Text>
-      <FlatList
-        className="mt-3"
-        data={visibleCards}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        onEndReached={handleEndReached}
-        onEndReachedThreshold={0.5}
-        ListFooterComponent={
-          isFetchingNextPage ? (
-            <View style={{ width: 60, height: CARD_HEIGHT, justifyContent: "center", alignItems: "center" }}>
-              <ActivityIndicator color={typeColor} />
-            </View>
-          ) : null
-        }
-      />
+      {loading ? (
+        <ActivityIndicator className="mt-4" color={typeColor} />
+      ) : (
+        <FlatList
+          className="mt-3"
+          data={visibleCards}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          onEndReached={handleEndReached}
+          onEndReachedThreshold={0.5}
+          getItemLayout={getItemLayout}
+          ListFooterComponent={
+            isFetchingNextPage ? (
+              <View style={footerStyle}>
+                <ActivityIndicator color={typeColor} />
+              </View>
+            ) : null
+          }
+        />
+      )}
       <TcgCardFullscreenViewer
         card={selectedCard}
-        visible={selectedCard !== null}
         onClose={handleCloseViewer}
       />
     </View>

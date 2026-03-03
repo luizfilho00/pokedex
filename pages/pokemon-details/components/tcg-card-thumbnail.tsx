@@ -1,4 +1,5 @@
 import { TcgCard } from "@/entities/tcg-card";
+import { GreyColors } from "@/constants/theme";
 import { Image } from "expo-image";
 import React, { useCallback, useEffect, useState } from "react";
 import { Pressable, View } from "react-native";
@@ -41,6 +42,10 @@ export const TcgCardThumbnail = React.memo(function TcgCardThumbnail({
     opacity: shimmerOpacity.value,
   }));
 
+  const handlePress = useCallback(() => {
+    onPress(card);
+  }, [card, onPress]);
+
   const handleLoad = useCallback(() => {
     setImageLoaded(true);
   }, []);
@@ -51,7 +56,7 @@ export const TcgCardThumbnail = React.memo(function TcgCardThumbnail({
   }, [card.id, onError, shimmerOpacity]);
 
   return (
-    <Pressable className="mr-3" onPress={() => onPress(card)}>
+    <Pressable className="mr-3" onPress={handlePress}>
       <View style={{ width: CARD_WIDTH, height: CARD_HEIGHT }}>
         {!imageLoaded && (
           <Animated.View
@@ -62,7 +67,7 @@ export const TcgCardThumbnail = React.memo(function TcgCardThumbnail({
                 width: CARD_WIDTH,
                 height: CARD_HEIGHT,
                 borderRadius: CARD_BORDER_RADIUS,
-                backgroundColor: "#E0E0E0",
+                backgroundColor: GreyColors.medium,
               },
             ]}
           />

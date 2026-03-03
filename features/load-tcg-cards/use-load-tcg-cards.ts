@@ -1,4 +1,4 @@
-import { fetchTcgCards } from "@/entities/tcg-card/api/tcg-card-api";
+import { fetchTcgCards } from "@/entities/tcg-card";
 import { tcgCardKeys } from "@/shared/lib/query-keys";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
@@ -8,7 +8,7 @@ interface UseLoadTcgCardsOptions {
   itemsPerPage?: number;
 }
 
-export function useLoadTcgCards({ pokemonName, itemsPerPage = 3 }: UseLoadTcgCardsOptions) {
+export function useLoadTcgCards({ pokemonName, itemsPerPage = 20 }: UseLoadTcgCardsOptions) {
   const query = useInfiniteQuery({
     queryKey: tcgCardKeys.byPokemon(pokemonName),
     queryFn: async ({ pageParam }) => {
