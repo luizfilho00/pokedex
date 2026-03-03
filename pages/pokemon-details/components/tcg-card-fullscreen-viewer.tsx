@@ -1,18 +1,22 @@
 import { TcgCard } from "@/entities/tcg-card";
 import { Ionicons } from "@expo/vector-icons";
 import BottomSheet from "@gorhom/bottom-sheet";
-import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { Image } from "expo-image";
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useMemo, useRef } from "react";
 import {
   Modal,
-  Pressable,
-  TouchableOpacity,
+  StyleSheet,
   useWindowDimensions,
   View,
 } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
+import {
+  Gesture,
+  GestureDetector,
+  GestureHandlerRootView,
+  TouchableOpacity,
+} from "react-native-gesture-handler";
 import Animated, {
+  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -37,21 +41,45 @@ export const TcgCardFullscreenViewer = React.memo(
     const marginTop = insets.top + 8;
     const bottomSheetRef = useRef<BottomSheet>(null);
     const scale = useSharedValue(1);
+
     const animatedStyle = useAnimatedStyle(() => ({
       transform: [{ scale: scale.value }],
     }));
 
-    const handlePressIn = useCallback(() => {
-      scale.value = withSpring(0.95);
-    }, [scale]);
-
-    const handlePressOut = useCallback(() => {
-      scale.value = withSpring(1);
-    }, [scale]);
-
-    const handleLongPress = useCallback(() => {
+    const openBottomSheet = useCallback(() => {
       bottomSheetRef.current?.expand();
     }, []);
+
+    const backgroundCloseGesture = useMemo(
+      () => Gesture.Tap().onEnd(() => runOnJS(onClose)()),
+      [onClose],
+    );
+
+    const longPressGesture = useMemo(
+      () =>
+        Gesture.LongPress()
+          .minDuration(500)
+          .onBegin(() => {
+            scale.value = withSpring(0.95);
+          })
+          .onStart(() => {
+            runOnJS(openBottomSheet)();
+          })
+          .onFinalize(() => {
+            scale.value = withSpring(1);
+          }),
+      [openBottomSheet],
+    );
+
+    const tapCloseGesture = useMemo(
+      () => Gesture.Tap().onEnd(() => runOnJS(onClose)()),
+      [onClose],
+    );
+
+    const cardGesture = useMemo(
+      () => Gesture.Exclusive(longPressGesture, tapCloseGesture),
+      [longPressGesture, tapCloseGesture],
+    );
 
     if (!card) return null;
 
@@ -68,52 +96,56 @@ export const TcgCardFullscreenViewer = React.memo(
         statusBarTranslucent
       >
         <GestureHandlerRootView className="flex-1">
-          <BottomSheetModalProvider>
-            <View className="relative flex-1 bg-black/85">
-              <TouchableOpacity
-                activeOpacity={0.6}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                onPress={onClose}
-                className="absolute right-6 z-[4]"
-                style={{ top: marginTop }}
+          <View className="flex-1 bg-black/85">
+            <GestureDetector gesture={backgroundCloseGesture}>
+              <View
+                style={StyleSheet.absoluteFill}
+                accessible
                 accessibilityRole="button"
                 accessibilityLabel="Close fullscreen viewer"
-              >
-                <Ionicons name="close" color="white" size={32} />
-              </TouchableOpacity>
-              <Pressable
-                className="flex-1 justify-center items-center"
-                onPress={onClose}
-                accessibilityRole="button"
-                accessibilityLabel="Close"
-              >
-                <Pressable
-                  onPressIn={handlePressIn}
-                  onPressOut={handlePressOut}
-                  onLongPress={handleLongPress}
+              />
+            </GestureDetector>
+            <View
+              className="flex-1 justify-center items-center"
+              pointerEvents="box-none"
+            >
+              <GestureDetector gesture={cardGesture}>
+                <Animated.View
+                  style={animatedStyle}
+                  accessible
                   accessibilityRole="image"
                   accessibilityLabel={card.name}
+                  accessibilityHint="Long press to save to gallery"
                 >
-                  <Animated.View style={animatedStyle}>
-                    <Image
-                      source={{ uri: imageUrl }}
-                      style={{
-                        width: cardWidth,
-                        height: cardHeight,
-                      }}
-                      contentFit="contain"
-                      cachePolicy="memory-disk"
-                    />
-                  </Animated.View>
-                </Pressable>
-              </Pressable>
-              <TcgCardActionsBottomSheet
-                ref={bottomSheetRef}
-                imageUrl={saveUrl}
-                filename={filename}
-              />
+                  <Image
+                    source={{ uri: imageUrl }}
+                    style={{
+                      width: cardWidth,
+                      height: cardHeight,
+                    }}
+                    contentFit="contain"
+                    cachePolicy="memory-disk"
+                  />
+                </Animated.View>
+              </GestureDetector>
             </View>
-          </BottomSheetModalProvider>
+            <TouchableOpacity
+              activeOpacity={0.6}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              onPress={onClose}
+              className="absolute right-6 z-[4]"
+              style={{ top: marginTop }}
+              accessibilityRole="button"
+              accessibilityLabel="Close fullscreen viewer"
+            >
+              <Ionicons name="close" color="white" size={32} />
+            </TouchableOpacity>
+            <TcgCardActionsBottomSheet
+              ref={bottomSheetRef}
+              imageUrl={saveUrl}
+              filename={filename}
+            />
+          </View>
         </GestureHandlerRootView>
       </Modal>
     );
