@@ -1,16 +1,16 @@
 {
   "expo": {
-    "name": "Pokedex",
-    "slug": "pokedex",
+    "name": "Pokebase",
+    "slug": "pokebase",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "pokedex",
+    "scheme": "pokebase",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.mouzinho.pokedex"
+      "bundleIdentifier": "com.mouzinho.pokebase"
     },
     "android": {
       "adaptiveIcon": {
@@ -21,7 +21,7 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.mouzinho.pokedex"
+      "package": "com.mouzinho.pokebase"
     },
     "web": {
       "output": "static",
@@ -45,8 +45,8 @@
       [
         "expo-media-library",
         {
-          "photosPermission": "Allow Pokédex to save card images to your photo library.",
-          "savePhotosPermission": "Allow Pokédex to save card images to your photo library.",
+          "photosPermission": "Allow Pokebase to save card images to your photo library.",
+          "savePhotosPermission": "Allow Pokebase to save card images to your photo library.",
           "isAccessMediaLocationEnabled": false
         }
       ]
