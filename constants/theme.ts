@@ -1,5 +1,5 @@
 /**
- * Pokedex theme configuration
+ * Pokebase theme configuration
  * Migrated from Flutter implementation
  */
 

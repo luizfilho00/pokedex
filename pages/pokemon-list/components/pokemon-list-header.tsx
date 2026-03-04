@@ -53,7 +53,7 @@ export const PokemonListHeader = ({ onFilterPress, onSortPress, onGenerationPres
             hasActiveSort={sortOption !== "smallest-first"}
             hasActiveGeneration={generation !== null}
           />
-          <Text className="flex-1 text-[32px] font-bold px-4 text-text-black">Pokédex</Text>
+          <Text className="flex-1 text-[32px] font-bold px-4 text-text-black">Pokebase</Text>
           <Text className="flex-1 text-base font-normal px-4 pt-2.5 text-text-grey">
             Search for Pokémon by name or using the National Pokédex number.
           </Text>

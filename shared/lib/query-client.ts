@@ -4,7 +4,7 @@ import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persi
 
 export const persister = createAsyncStoragePersister({
   storage: AsyncStorage,
-  key: 'POKEDEX_CACHE',
+  key: 'POKEBASE_CACHE',
   throttleTime: 1000,
 });
 

@@ -27,6 +27,9 @@ workflows:
       - name: Generate native project
         script: |
           npx expo prebuild --platform android
+      - name: Decode Google Services config
+        script: |
+          echo "$GOOGLE_SERVICES_JSON" | base64 --decode > android/app/google-services.json
       - name: Decode keystore
         script: |
           echo "$CM_KEYSTORE" | base64 --decode > android/app/release.keystore
@@ -39,7 +42,7 @@ workflows:
       firebase:
         firebase_service_account: $FIREBASE_SERVICE_ACCOUNT
         android:
-          app_id: 1:781224438706:android:8f05cdecafb314e23352ab
+          app_id: 1:456356946742:android:7ddf4eeb213fd4f1180997
           groups:
             - testers
           artifact_type: apk
