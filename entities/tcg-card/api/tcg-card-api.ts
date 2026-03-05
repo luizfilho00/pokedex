@@ -1,9 +1,6 @@
 import { PokemonTCG } from "pokemon-tcg-sdk-typescript";
 import { TcgCard } from "../model/tcg-card";
 
-const API_KEY = "5e0d8da8-1fd7-47a6-849d-fdf221effc10";
-
-process.env.POKEMONTCG_API_KEY = API_KEY;
 
 export interface FetchTcgCardsParams {
   pokemonName: string;
