@@ -44,3 +44,4 @@ app-example
 
 # Release keystore
 release.keystore
+keystore.properties
