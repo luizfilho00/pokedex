@@ -33,11 +33,11 @@ workflows:
       - name: Decode keystore
         script: |
           echo "$CM_KEYSTORE" | base64 --decode > android/app/release.keystore
-      - name: Build Android APK
+      - name: Build Android AAB
         script: |
-          cd android && ./gradlew assembleRelease
+          cd android && ./gradlew bundleRelease
     artifacts:
-      - android/app/build/outputs/**/*.apk
+      - android/app/build/outputs/**/*.aab
     publishing:
       firebase:
         firebase_service_account: $FIREBASE_SERVICE_ACCOUNT
@@ -45,4 +45,8 @@ workflows:
           app_id: 1:456356946742:android:7ddf4eeb213fd4f1180997
           groups:
             - testers
-          artifact_type: apk
+          artifact_type: aab
+      google_play:
+        credentials: $FIREBASE_SERVICE_ACCOUNT
+        track: internal
+        submit_as_draft: true
