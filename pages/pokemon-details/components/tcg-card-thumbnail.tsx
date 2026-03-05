@@ -73,7 +73,7 @@ export const TcgCardThumbnail = React.memo(function TcgCardThumbnail({
           />
         )}
         <Image
-          source={{ uri: `${card.imageUrl}/low.webp` }}
+          source={{ uri: card.smallImageUrl }}
           style={{ width: CARD_WIDTH, height: CARD_HEIGHT, borderRadius: CARD_BORDER_RADIUS }}
           contentFit="cover"
           cachePolicy="memory-disk"

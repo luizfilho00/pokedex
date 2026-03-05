@@ -12,16 +12,16 @@ const { fetchTcgCards } = jest.requireMock(
 describe("useLoadTcgCards", () => {
   const mockCard1: TcgCard = {
     id: "swsh3-136",
-    localId: "136",
     name: "Pikachu",
-    imageUrl: "https://assets.tcgdex.net/en/swsh/swsh3/136",
+    smallImageUrl: "https://images.pokemontcg.io/swsh3/136.png",
+    largeImageUrl: "https://images.pokemontcg.io/swsh3/136_hires.png",
   };
 
   const mockCard2: TcgCard = {
     id: "base1-58",
-    localId: "58",
     name: "Flying Pikachu",
-    imageUrl: "https://assets.tcgdex.net/en/base/base1/58",
+    smallImageUrl: "https://images.pokemontcg.io/base1/58.png",
+    largeImageUrl: "https://images.pokemontcg.io/base1/58_hires.png",
   };
 
   beforeEach(() => {
@@ -109,9 +109,9 @@ describe("useLoadTcgCards", () => {
   it("should have next page only when page is full", async () => {
     const fullPage = Array.from({ length: 10 }, (_, i) => ({
       id: `card-${i}`,
-      localId: String(i),
       name: `Pikachu Variant ${i}`,
-      imageUrl: `https://assets.tcgdex.net/en/swsh/swsh3/${i}`,
+      smallImageUrl: `https://images.pokemontcg.io/swsh3/${i}.png`,
+      largeImageUrl: `https://images.pokemontcg.io/swsh3/${i}_hires.png`,
     }));
 
     fetchTcgCards.mockResolvedValueOnce(fullPage);
@@ -131,15 +131,15 @@ describe("useLoadTcgCards", () => {
   it("should fetch next page and append cards", async () => {
     const mockCard3: TcgCard = {
       id: "swsh4-25",
-      localId: "25",
       name: "Raichu",
-      imageUrl: "https://assets.tcgdex.net/en/swsh/swsh4/25",
+      smallImageUrl: "https://images.pokemontcg.io/swsh4/25.png",
+      largeImageUrl: "https://images.pokemontcg.io/swsh4/25_hires.png",
     };
     const mockCard4: TcgCard = {
       id: "base2-14",
-      localId: "14",
       name: "Surfing Pikachu",
-      imageUrl: "https://assets.tcgdex.net/en/base/base2/14",
+      smallImageUrl: "https://images.pokemontcg.io/base2/14.png",
+      largeImageUrl: "https://images.pokemontcg.io/base2/14_hires.png",
     };
 
     fetchTcgCards

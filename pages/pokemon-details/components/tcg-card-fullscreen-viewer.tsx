@@ -98,8 +98,8 @@ export const TcgCardFullscreenViewer = React.memo(
 
     if (!card) return null;
 
-    const imageUrl = `${card.imageUrl}/high.webp`;
-    const saveUrl = `${card.imageUrl}/high.png`;
+    const imageUrl = card.largeImageUrl;
+    const saveUrl = card.largeImageUrl;
     const filename = `${card.name}-${card.id}.png`;
 
     return (

@@ -1,13 +1,9 @@
+import { PokemonTCG } from "pokemon-tcg-sdk-typescript";
 import { TcgCard } from "../model/tcg-card";
 
-const TCG_BASE_URL = "https://api.tcgdex.net/v2/en";
+const API_KEY = "5e0d8da8-1fd7-47a6-849d-fdf221effc10";
 
-interface TcgCardApiResponse {
-  id: string;
-  localId: string;
-  name: string;
-  image?: string;
-}
+process.env.POKEMONTCG_API_KEY = API_KEY;
 
 export interface FetchTcgCardsParams {
   pokemonName: string;
@@ -15,27 +11,23 @@ export interface FetchTcgCardsParams {
   itemsPerPage: number;
 }
 
-export async function fetchTcgCards(params: FetchTcgCardsParams): Promise<TcgCard[]> {
+export async function fetchTcgCards(
+  params: FetchTcgCardsParams,
+): Promise<TcgCard[]> {
   const { pokemonName, page, itemsPerPage } = params;
-  const url = `${TCG_BASE_URL}/cards?name=${encodeURIComponent(pokemonName)}&pagination:page=${page}&pagination:itemsPerPage=${itemsPerPage}`;
 
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error("Failed to fetch TCG cards");
-  }
+  const cards = await PokemonTCG.findCardsByQueries({
+    q: `name:${pokemonName}`,
+    page,
+    pageSize: itemsPerPage,
+  });
 
-  const data: TcgCardApiResponse[] = await response.json();
-
-  if (!Array.isArray(data)) {
-    return [];
-  }
-
-  return data
-    .filter((card): card is TcgCardApiResponse & { image: string } => !!card.image)
+  return cards
+    .filter((card) => !!card.images)
     .map((card) => ({
       id: card.id,
-      localId: card.localId,
       name: card.name,
-      imageUrl: card.image,
+      smallImageUrl: card.images.small,
+      largeImageUrl: card.images.large,
     }));
 }
