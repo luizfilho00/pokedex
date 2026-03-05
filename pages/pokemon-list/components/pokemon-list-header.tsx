@@ -1,6 +1,6 @@
 import { IconButton } from "@/components/ui/icon-button";
 import { DEFAULT_FILTERS } from "@/features/filter-pokemon-list";
-import { ImageBackground, Text, View } from "react-native";
+import { ImageBackground, Keyboard, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { usePokemonListContext } from "../context/pokemon-list-context";
 import { useCallback, useMemo } from "react";
@@ -83,17 +83,17 @@ function TopBarActions({
       <IconButton
         icon={require("@/assets/images/generation.svg")}
         size={20}
-        onPress={onGenerationPress ?? (() => {})}
+        onPress={() => { Keyboard.dismiss(); onGenerationPress?.(); }}
         showIndicator={hasActiveGeneration}
       />
       <IconButton
         icon={require("@/assets/images/sort.svg")}
-        onPress={onSortPress ?? (() => {})}
+        onPress={() => { Keyboard.dismiss(); onSortPress?.(); }}
         showIndicator={hasActiveSort}
       />
       <IconButton
         icon={require("@/assets/images/filter.svg")}
-        onPress={onFilterPress ?? (() => {})}
+        onPress={() => { Keyboard.dismiss(); onFilterPress?.(); }}
         showIndicator={hasActiveFilters}
       />
     </View>
