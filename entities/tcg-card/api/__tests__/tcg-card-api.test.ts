@@ -1,14 +1,5 @@
 import { fetchTcgCards } from "../tcg-card-api";
 
-jest.mock("pokemon-tcg-sdk-typescript", () => ({
-  PokemonTCG: {
-    findCardsByQueries: jest.fn(),
-  },
-}));
-
-const { PokemonTCG } = jest.requireMock("pokemon-tcg-sdk-typescript");
-const mockFindCards = PokemonTCG.findCardsByQueries as jest.Mock;
-
 const mockSdkCards = [
   {
     id: "swsh3-136",
@@ -28,37 +19,55 @@ const mockSdkCards = [
   },
 ];
 
+function mockFetchResponse(data: unknown[], ok = true, status = 200) {
+  return jest.fn().mockResolvedValueOnce({
+    ok,
+    status,
+    json: () => Promise.resolve({ data }),
+  });
+}
+
 describe("fetchTcgCards", () => {
+  const originalFetch = global.fetch;
+
   afterEach(() => {
-    jest.clearAllMocks();
+    global.fetch = originalFetch;
+    jest.restoreAllMocks();
+    delete process.env.EXPO_PUBLIC_POKEMONTCG_API_KEY;
   });
 
-  it("calls the SDK with correct query params", async () => {
-    mockFindCards.mockResolvedValueOnce(mockSdkCards);
+  it("calls the API with correct query params", async () => {
+    global.fetch = mockFetchResponse(mockSdkCards);
 
     await fetchTcgCards({ pokemonName: "Pikachu", page: 1, itemsPerPage: 10 });
 
-    expect(mockFindCards).toHaveBeenCalledWith({
-      q: "name:Pikachu",
-      page: 1,
-      pageSize: 10,
-    });
+    expect(global.fetch).toHaveBeenCalledWith(
+      expect.stringContaining("q=name%3APikachu"),
+      expect.any(Object),
+    );
+    expect(global.fetch).toHaveBeenCalledWith(
+      expect.stringContaining("page=1"),
+      expect.any(Object),
+    );
+    expect(global.fetch).toHaveBeenCalledWith(
+      expect.stringContaining("pageSize=10"),
+      expect.any(Object),
+    );
   });
 
   it("passes pokemon name directly in query value", async () => {
-    mockFindCards.mockResolvedValueOnce([]);
+    global.fetch = mockFetchResponse([]);
 
     await fetchTcgCards({ pokemonName: "Mr. Mime", page: 1, itemsPerPage: 10 });
 
-    expect(mockFindCards).toHaveBeenCalledWith({
-      q: "name:Mr. Mime",
-      page: 1,
-      pageSize: 10,
-    });
+    expect(global.fetch).toHaveBeenCalledWith(
+      expect.stringContaining("q=name%3AMr.+Mime"),
+      expect.any(Object),
+    );
   });
 
-  it("maps SDK response fields correctly", async () => {
-    mockFindCards.mockResolvedValueOnce(mockSdkCards);
+  it("maps API response fields correctly", async () => {
+    global.fetch = mockFetchResponse(mockSdkCards);
 
     const cards = await fetchTcgCards({ pokemonName: "Pikachu", page: 1, itemsPerPage: 10 });
 
@@ -77,8 +86,8 @@ describe("fetchTcgCards", () => {
     });
   });
 
-  it("returns empty array when SDK returns empty array", async () => {
-    mockFindCards.mockResolvedValueOnce([]);
+  it("returns empty array when API returns empty data", async () => {
+    global.fetch = mockFetchResponse([]);
 
     const cards = await fetchTcgCards({ pokemonName: "UnknownPokemon", page: 1, itemsPerPage: 10 });
 
@@ -86,7 +95,7 @@ describe("fetchTcgCards", () => {
   });
 
   it("filters out cards without images", async () => {
-    mockFindCards.mockResolvedValueOnce([
+    global.fetch = mockFetchResponse([
       mockSdkCards[0],
       { id: "no-image-1", name: "NoImage", images: null },
       { id: "no-image-2", name: "NoImage2", images: undefined },
@@ -98,23 +107,53 @@ describe("fetchTcgCards", () => {
     expect(cards[0].id).toBe("swsh3-136");
   });
 
-  it("throws when the SDK rejects", async () => {
-    mockFindCards.mockRejectedValueOnce(new Error("Request failed"));
+  it("throws when the API returns a non-ok response", async () => {
+    global.fetch = mockFetchResponse([], false, 500);
 
     await expect(
       fetchTcgCards({ pokemonName: "Pikachu", page: 1, itemsPerPage: 10 }),
-    ).rejects.toThrow("Request failed");
+    ).rejects.toThrow("TCG API request failed with status 500");
   });
 
   it("passes pagination params correctly", async () => {
-    mockFindCards.mockResolvedValueOnce([]);
+    global.fetch = mockFetchResponse([]);
 
     await fetchTcgCards({ pokemonName: "Pikachu", page: 3, itemsPerPage: 20 });
 
-    expect(mockFindCards).toHaveBeenCalledWith({
-      q: "name:Pikachu",
-      page: 3,
-      pageSize: 20,
-    });
+    expect(global.fetch).toHaveBeenCalledWith(
+      expect.stringContaining("page=3"),
+      expect.any(Object),
+    );
+    expect(global.fetch).toHaveBeenCalledWith(
+      expect.stringContaining("pageSize=20"),
+      expect.any(Object),
+    );
+  });
+
+  it("includes API key header when env var is set", async () => {
+    process.env.EXPO_PUBLIC_POKEMONTCG_API_KEY = "test-api-key";
+    global.fetch = mockFetchResponse([]);
+
+    await fetchTcgCards({ pokemonName: "Pikachu", page: 1, itemsPerPage: 10 });
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({
+        headers: expect.objectContaining({ "X-Api-Key": "test-api-key" }),
+      }),
+    );
+  });
+
+  it("does not include API key header when env var is not set", async () => {
+    global.fetch = mockFetchResponse([]);
+
+    await fetchTcgCards({ pokemonName: "Pikachu", page: 1, itemsPerPage: 10 });
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({
+        headers: expect.not.objectContaining({ "X-Api-Key": expect.anything() }),
+      }),
+    );
   });
 });
