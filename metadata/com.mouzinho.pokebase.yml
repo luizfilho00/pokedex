@@ -16,7 +16,11 @@ Builds:
     commit: v1.0.0
     sudo:
       - apt-get update
-      - apt-get install -y nodejs npm
+      - apt-get install -y curl
+      - curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+      - apt-get install -y nodejs
+      - node --version
+      - npm --version
     init:
       - npm install
       - npx expo prebuild --platform android --no-install
