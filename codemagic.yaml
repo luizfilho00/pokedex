@@ -1,4 +1,39 @@
 workflows:
+  android-fdroid:
+    name: Android F-Droid Build
+    max_build_duration: 30
+    instance_type: mac_mini_m2
+    triggering:
+      events: []
+    environment:
+      java: 17
+      node: 20
+    scripts:
+      - name: Install dependencies
+        script: |
+          npm install
+      - name: Set version code
+        script: |
+          node -e "
+            const fs = require('fs');
+            const appJson = JSON.parse(fs.readFileSync('app.json', 'utf8'));
+            appJson.expo.android = appJson.expo.android || {};
+            appJson.expo.android.versionCode = Number(process.env.VERSION_CODE) || appJson.expo.android.versionCode || 1;
+            fs.writeFileSync('app.json', JSON.stringify(appJson, null, 2) + '\n');
+            console.log('Set versionCode to', appJson.expo.android.versionCode);
+          "
+      - name: Generate native project
+        script: |
+          npx expo prebuild --platform android --no-install
+      - name: Decode keystore
+        script: |
+          echo "$CM_KEYSTORE" | base64 --decode > android/app/release.keystore
+      - name: Build Android APK
+        script: |
+          cd android && ./gradlew assembleRelease
+    artifacts:
+      - android/app/build/outputs/**/*.apk
+
   android-build:
     name: Android Build
     max_build_duration: 30

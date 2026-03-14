@@ -1,0 +1,16 @@
+Pokébase is a free and open-source Pokémon companion app that lets you explore the world of Pokémon and Trading Card Game (TCG) cards.
+
+Features:
+• Browse the full Pokédex with beautiful cards showing types, stats, and images
+• Search and filter Pokémon by name in real time
+• Explore Pokémon TCG cards with high-quality artwork
+• Save card images to your photo library
+• Offline caching — data loads instantly after the first visit
+• Dark and light theme support
+• Smooth animations and optimized performance
+
+Pokébase uses only free, open data sources:
+• PokéAPI for Pokémon data
+• TCGdex for Trading Card Game data
+
+No accounts, no tracking, no ads. Just Pokémon.

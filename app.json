@@ -13,6 +13,7 @@
       "bundleIdentifier": "com.mouzinho.pokebase"
     },
     "android": {
+      "versionCode": 1,
       "adaptiveIcon": {
         "backgroundColor": "#6A3794",
         "foregroundImage": "./assets/images/android-icon-foreground.png",

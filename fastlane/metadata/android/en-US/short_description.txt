@@ -1,0 +1,1 @@
+Browse Pokémon and TCG cards with search, filtering, and offline caching.

@@ -1,0 +1,8 @@
+Initial release.
+
+• Browse the full Pokédex
+• Search and filter Pokémon by name
+• Explore Pokémon TCG cards
+• Save card images to your photo library
+• Offline caching with React Query
+• Dark and light theme support

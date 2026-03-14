@@ -1,0 +1,31 @@
+Categories:
+  - Sports & Health
+
+License: MIT
+SourceCode: https://github.com/luizfilho00/pokedex
+IssueTracker: https://github.com/luizfilho00/pokedex/issues
+
+AutoName: Pokébase
+
+RepoType: git
+Repo: https://github.com/luizfilho00/pokedex
+
+Builds:
+  - versionName: 1.0.0
+    versionCode: 1
+    commit: v1.0.0
+    sudo:
+      - apt-get update
+      - apt-get install -y nodejs npm
+    init:
+      - npm install
+      - npx expo prebuild --platform android --no-install
+    subdir: android
+    gradle:
+      - release
+
+AutoUpdateMode: None
+UpdateCheckMode: Tags v.*
+
+CurrentVersion: 1.0.0
+CurrentVersionCode: 1
