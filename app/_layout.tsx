@@ -38,7 +38,7 @@ export default function RootLayout() {
   return (
     <PersistQueryClientProvider
       client={queryClient}
-      persistOptions={{ persister }}
+      persistOptions={{ persister, maxAge: Infinity }}
     >
       <GestureHandlerRootView style={{ flex: 1}}>
         <SafeAreaProvider>
