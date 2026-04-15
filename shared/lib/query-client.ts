@@ -2,6 +2,9 @@ import { QueryClient, QueryCache } from '@tanstack/react-query';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
 
+// Bump this whenever persisted API data shape/semantics change and should be refetched.
+export const QUERY_CACHE_BUSTER = '2026-04-sprite-url-padding-v2';
+
 export const persister = createAsyncStoragePersister({
   storage: AsyncStorage,
   key: 'POKEBASE_CACHE',

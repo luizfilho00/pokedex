@@ -7,7 +7,7 @@ import { StatusBar } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
-import { queryClient, persister } from "@/shared/lib/query-client";
+import { queryClient, persister, QUERY_CACHE_BUSTER } from "@/shared/lib/query-client";
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
@@ -38,7 +38,7 @@ export default function RootLayout() {
   return (
     <PersistQueryClientProvider
       client={queryClient}
-      persistOptions={{ persister, maxAge: Infinity }}
+      persistOptions={{ persister, maxAge: Infinity, buster: QUERY_CACHE_BUSTER }}
     >
       <GestureHandlerRootView style={{ flex: 1}}>
         <SafeAreaProvider>
